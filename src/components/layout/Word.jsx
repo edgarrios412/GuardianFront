@@ -6,12 +6,13 @@ import { Buffer } from 'buffer';
 import axios from 'axios';
 import { setCulture, L10n } from '@syncfusion/ej2-base';
 import json from "./WordEs.json"
+import { Button } from '../ui/button';
 // import { TitleBar } from './title-bar';
 // import './default.component.css';
 DocumentEditorContainerComponent.Inject(Toolbar);
 // registerLicense("Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJzWmFZfVpgfF9EaVZRQWYuP1ZhSXxXdkdjUX9Wcn1VQ2JcU0U=");
 // tslint:disable:max-line-length
-const Word = ({setRutaArchivo, tipoDocumental, id, setData, userId, datosTramite, creado, rutaDocumento, enFirma, setGuardado, documentoId, esFlujo = false }) => {
+const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, datosTramite, creado, rutaDocumento, enFirma, setGuardado, documentoId, esFlujo = false }) => {
     // let hostUrl = "https://backguardian.supervigilancia.gov.co:8443/guardian/sync/";
     let container = useRef(null);
     const [isOpen, setIsOpen] = React.useState(false)
@@ -181,6 +182,7 @@ const Word = ({setRutaArchivo, tipoDocumental, id, setData, userId, datosTramite
                 const form = new FormData()
                 var file = new File([exportedDocument], "word.docx");
                 form.append("file", file)
+                form.append("tramiteId", tramiteId)
                 axios
                     .post(
                         "/documentos/convert/toPdf", form)
@@ -309,7 +311,7 @@ const Word = ({setRutaArchivo, tipoDocumental, id, setData, userId, datosTramite
                             showPropertiesPane={false} locale="es-ES" />
                     </div>
                 </div>
-                <button onClick={guardarDatos}>Guardar</button>
+                <Button onClick={guardarDatos} className="flex m-auto mt-10">Guardar documento en PDF</Button>
             </div>
         </>);
 };
