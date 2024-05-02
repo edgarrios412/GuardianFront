@@ -103,6 +103,7 @@ import { SelectLabel } from "@radix-ui/react-select";
 const Bandeja = ({ className, ...props }) => {
   // const { usuario, updateUsuario } = useContext(UserContext);
   const usuario = JSON.parse(localStorage.getItem("user"));
+  console.log(usuario)
   const { toast } = useToast();
   const [procedimiento, setProcedimiento] = useState(null);
   const [pacienteOptionId, setPacienteOptionId] = useState(null);
@@ -336,8 +337,10 @@ const Bandeja = ({ className, ...props }) => {
               </div>
               <Separator />
               {/* Visor */}
-              <PdfViewer />
-              <Separator />
+              {usuario.rol == 2 && <><h1>Seleccionar plantilla</h1>
+              <Separator /></>}
+              {usuario.rol > 3 && <><PdfViewer />
+              <Separator /></>}
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="message" className="font-bold mb-2 mt-4">
                   Observaciones
