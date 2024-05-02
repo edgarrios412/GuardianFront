@@ -6,7 +6,9 @@ import { NavigationProvider } from "./utils/context/Navigation/NavigationProvide
 import axios from "axios";
 import { UserProvider } from "./utils/context/User/UserProvider.jsx";
 import { Toaster } from "./components/ui/toaster.jsx";
+import { registerLicense } from '@syncfusion/ej2-base';
 
+registerLicense("ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdUViXnxedXxWRWZa")
 // axios.defaults.baseURL = "https://back-teldip.onrender.com";
 axios.defaults.baseURL = 'http://localhost:3001';
 

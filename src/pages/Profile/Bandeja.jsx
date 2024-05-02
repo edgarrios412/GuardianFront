@@ -99,6 +99,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import PdfViewer from "@/components/layout/PdfViewer";
 import { SelectLabel } from "@radix-ui/react-select";
+import Word from "@/components/layout/Word";
 
 const Bandeja = ({ className, ...props }) => {
   // const { usuario, updateUsuario } = useContext(UserContext);
@@ -113,6 +114,8 @@ const Bandeja = ({ className, ...props }) => {
   const [usuarioAsignado, setUsuarioAsignado] = useState();
   const [documento, setDocumento] = useState(null)
   const [observacion, setObservacion] = useState("")
+  const [plantillaSelected, setPlantillaSelected] = useState(null)
+  const [rutaArchivo, setRutaArchivo] = useState(null)
 
   useEffect(() => {
     axios
@@ -335,12 +338,21 @@ const Bandeja = ({ className, ...props }) => {
                   </p>
                 </div>
               </div>
-              <Separator />
+              {usuario.rol > 1 && <Separator />}
               {/* Visor */}
-              {usuario.rol == 2 && <><h1>Seleccionar plantilla</h1>
-              <Separator /></>}
-              {usuario.rol > 3 && <><PdfViewer />
-              <Separator /></>}
+              {/* SI ES REPARTIDOR */}
+              {usuario.rol == 1 && <></>}
+              {usuario.rol == 2 && (plantillaSelected != null ? <div>
+                <h3 className="text-center font-bold text-xl my-6">Seleccionar plantillas</h3>
+                <div className="flex flex-col items-center gap-4 mb-10">
+                  <Button className="w-96" onClick={() => setPlantillaSelected(1)}>Plantilla uno</Button>
+                  <Button className="w-96" onClick={() => setPlantillaSelected(2)}>Plantilla dos</Button>
+                  <Button className="w-96" onClick={() => setPlantillaSelected(3)}>Plantilla tres</Button>
+                  <Button className="w-96" onClick={() => setPlantillaSelected(4)}>Plantilla cuatro</Button>
+                </div>
+              </div>:(!rutaArchivo ? <Word setRutaArchivo={setRutaArchivo}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
+              {usuario.rol >= 3 && <PdfViewer />}
+              <Separator />
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="message" className="font-bold mb-2 mt-4">
                   Observaciones

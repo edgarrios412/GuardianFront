@@ -16,7 +16,7 @@ import es_ES from '@react-pdf-viewer/locales/lib/es_ES.json';
 
 const PdfViewer = ({ rutaDocumento }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
+  alert(rutaDocumento)
   const [documento, setDocumento] = useState(null);
 
   return (
@@ -34,7 +34,7 @@ const PdfViewer = ({ rutaDocumento }) => {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             localization={es_ES}
-            fileUrl={"./Teldip.pdf"}
+            fileUrl={"http://localhost:3001/uploads/example.doc.pdf"}
             plugins={[
               // Register plugins
               defaultLayoutPluginInstance,
