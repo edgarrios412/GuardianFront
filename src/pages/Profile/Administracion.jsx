@@ -34,6 +34,7 @@ import {
   Cpu,
   ChevronLeft,
   Check,
+  LineChart
 } from "lucide-react";
 import {
   Card,
@@ -57,6 +58,7 @@ import { UserContext } from "@/utils/context/User/UserContext";
 import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/helpers/formatter";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import FromNumberToNumber from "@/utils/helpers/FromNumberToNumber.jsx";
 
 const Administracion = () => {
   const [serviceSelected, setServiceSelected] = useState(null);
@@ -147,6 +149,18 @@ const Administracion = () => {
                     <p className="text-sm font-bold leading-none">Auditoría</p>
                     <p className="text-sm text-muted-foreground">
                       Observa todos los movimientos realizados en la plataforma
+                    </p>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setServiceSelected(3)}
+                  className="hover:border-blue-200 hover:bg-blue-100 transition-all cursor-pointer flex items-center space-x-4 rounded-md border p-4"
+                >
+                  <LineChart />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-bold leading-none">Estadisticas</p>
+                    <p className="text-sm text-muted-foreground">
+                      Mira en tiempo real las estadisticas con gráficas
                     </p>
                   </div>
                 </div>
@@ -388,6 +402,28 @@ const Administracion = () => {
                     </TableRow> */}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      {serviceSelected == 3 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="font-[OpenSans] px-5 py-5">
+            <CardHeader>
+              <CardTitle className="flex gap-4 items-center">
+                <ChevronLeft
+                  className="mt-1 cursor-pointer"
+                  onClick={() => setServiceSelected(null)}
+                />{" "}
+                Estadisticas
+              </CardTitle>
+              <CardDescription>
+                Observa los movimientos realizados por los usuarios dentro de la
+                plataforma
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FromNumberToNumber className={"font-bold"} from={0} to={10}/>
             </CardContent>
           </Card>
         </motion.div>

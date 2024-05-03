@@ -10,7 +10,9 @@ import {
   FileCode,
   LogOut,
   Archive,
-  FlaskConical
+  FlaskConical,
+  MessageCircleWarning,
+  MapPin
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import Perfil from "./Profile/Bandeja";
@@ -38,6 +40,8 @@ import axios from "axios";
 import Procedimientos from "./Profile/Procedimientos";
 import ModalFormSolicitud from "@/components/layout/ModalFormSolicitud";
 import FormSolicitud from "./FormSolicitud";
+import Reportes from "./Profile/Reportes";
+import Geolocalizacion from "./Profile/Geolocalizacion";
 
 const Profile = () => {
   // const { usuario } = useContext(UserContext);
@@ -184,7 +188,7 @@ const Profile = () => {
                 ))}
               {sizePanel > 14 && "Crear solicitud"}
             </Button>
-            {/* {usuario.micompany !== null && <Button
+            <Button
               onClick={() => setPage(2)}
               className={`font-[OpenSans] bg-transparent mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
                 page == 2 ? "bg-blue-200" : "bg-transparent"
@@ -195,28 +199,57 @@ const Profile = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger className="w-full">
-                        <FileCode
+                        <MessageCircleWarning
                           className={`${
                             sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"
                           }`}
                         />
                       </TooltipTrigger>
                       <TooltipContent side="right">
-                        <p>Toma de muestras</p>
+                        <p>Reportes</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 ) : (
-                  <FlaskConical
+                  <MessageCircleWarning
                     className={`${sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"}`}
                   />
                 ))}
-              {sizePanel > 14 && "Toma de muestras"}
-            </Button>} */}
+              {sizePanel > 14 && "Reportes"}
+            </Button>
             <Button
               onClick={() => setPage(3)}
               className={`font-[OpenSans] bg-transparent mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
                 page == 3 ? "bg-blue-200" : "bg-transparent"
+              }`}
+            >
+              {(sizePanel > 18 || sizePanel < 14) &&
+                (sizePanel < 14 ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger className="w-full">
+                        <MapPin
+                          className={`${
+                            sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"
+                          }`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>Geolocalización</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <MapPin
+                    className={`${sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"}`}
+                  />
+                ))}
+              {sizePanel > 14 && "Geolocalización"}
+            </Button>
+            <Button
+              onClick={() => setPage(4)}
+              className={`font-[OpenSans] bg-transparent mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
+                page == 4 ? "bg-blue-200" : "bg-transparent"
               }`}
             >
               {(sizePanel > 18 || sizePanel < 14) &&
@@ -278,10 +311,9 @@ const Profile = () => {
         <ResizableHandle />
         <ResizablePanel defaultSize={80} className="!overflow-y-auto bg-gray-100">
           {page == 1 && <Perfil />}
-          {page == 2 && <Procedimientos />}
-          {page == 3 && <Servicios />}
-          {/* {page == 5 && <Soporte />} */}
-          {/* {page == 6 && <Ajustes />} */}
+          {page == 2 && <Reportes />}
+          {page == 3 && <Geolocalizacion />}
+          {page == 4 && <Servicios />}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
