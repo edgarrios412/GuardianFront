@@ -6,10 +6,12 @@ import {
   CalendarDays,
   TextSelect,
   X,
-  Save,
+  User,
   Users,
   FolderOpen,
   ChevronLeft,
+  Mail,
+  CircleDot,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -152,6 +154,22 @@ const Bandeja = ({ className, ...props }) => {
       });
   };
 
+  const finalizarFlujo = () => {
+    axios
+      .put("/tramite/" + procedimiento.id, {
+        estado: 5,
+        observacion,
+        usuarioHistorial: usuario.id
+      })
+      .then(({ data }) => {
+        alert("Editado");
+        axios
+          .get("/tramite/usuario/" + usuario.id)
+          .then(({ data }) => setTramites(data));
+        setProcedimiento(null);
+      });
+  };
+
   const uploadFile = () => {
     const form = new FormData()
     form.append("file", documento)
@@ -189,16 +207,26 @@ const Bandeja = ({ className, ...props }) => {
                         <TableHead className="w-[100px]">Id</TableHead>
                         <TableHead>Usuario</TableHead>
                         <TableHead>Tramite</TableHead>
+                        <TableHead>Estado</TableHead>
                         <TableHead>Descripción</TableHead>
                         <TableHead>Ver</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {tramites.map((t) => (
+                      {tramites.sort((a,b) => a.id-b.id).map((t) => (
                         <TableRow key={t.id}>
                           <TableCell className="font-bold">{t.id}</TableCell>
                           <TableCell>{t.usuario.nombres} {t.usuario.apellidos}</TableCell>
-                          <TableCell>{t.tramite}</TableCell>
+                          <TableCell>{t.tramite == 1 ? "Solicitud de alimentos" : "Solicitud de insumos"}</TableCell>
+                          <TableCell>
+                            <span className="rounded-lg bg-green-600 text-white px-2 py-1">
+                            {t.estado == 1 && "Nuevo"}
+                            {t.estado == 2 && "Repartido"}
+                            {t.estado == 3 && "Proyectado"}
+                            {t.estado == 4 && "Revisado"}
+                            {t.estado == 5 && "Firmado"}
+                            </span>
+                            </TableCell>
                           <TableCell>{t.descripcion}</TableCell>
                           <TableCell>
                             <Button onClick={() => setProcedimiento(t)}>
@@ -301,9 +329,36 @@ const Bandeja = ({ className, ...props }) => {
                           >
                             Observa la información más detallada del usuario
                           </DialogDescription>
-                          <h3 className="my-20 text-center font-bold">
-                            EN DESARROLLO
-                          </h3>
+                          <div className="flex-row gap-6">
+                              <div className="flex gap-3 items-center mb-4">
+                              <User className="min-w-5 min-h-5 "/>
+                              <span className="font-bold font-[OpenSans]">{procedimiento.usuario.nombres} {procedimiento.usuario.apellidos}</span>
+                              </div>
+                              <div className="flex gap-3 items-center mb-4">
+                              <Mail className="min-w-5 min-h-5 "/>
+                              <span className="font-bold font-[OpenSans]">{procedimiento.usuario.email}</span>
+                              </div>
+                              <div className="flex gap-3 items-center mb-4">
+                              <CircleDot className="min-w-5 min-h-5 "/>
+                              <span className="font-[OpenSans]">
+                                {procedimiento.usuario.rol == 1 && "Repartidor"}
+                                {procedimiento.usuario.rol == 2 && "Proyector"}
+                                {procedimiento.usuario.rol == 3 && "Revisor"}
+                                {procedimiento.usuario.rol == 4 && "Firmante"}
+                                </span>
+                              </div>
+                              <div className="flex gap-3 items-center mb-4">
+                              <Users className="min-w-5 min-h-5 "/>
+                              <span className="font-[OpenSans]">
+                                {procedimiento.usuario.grupoId == 100 && "GRUPO ALMACEN"}
+                                {procedimiento.usuario.grupoId == 200 && "GRUPO FINANCIERO"}
+                                </span>
+                              </div>
+                              <div className="flex gap-3 items-center mb-4">
+                              <CalendarDays className="min-w-5 min-h-5 "/>
+                              <span className="font-light font-[OpenSans]">{formatDate(procedimiento.usuario.createdDate)}</span>
+                              </div>
+                            </div>
                         </div>
                       )}
                       {pacienteOptionId == 2 && (
@@ -331,7 +386,7 @@ const Bandeja = ({ className, ...props }) => {
                 </div>
                 <div>
                   <Label className="font-bold">Tramite</Label>
-                  <p>{procedimiento.tramite}</p>
+                  <p>{procedimiento.tramite == 1 ? "Solicitud de alimentos" : "Solicitud de insumos"}</p>
                 </div>
                 <div>
                   <Label className="font-bold">Fecha</Label>
@@ -357,7 +412,10 @@ const Bandeja = ({ className, ...props }) => {
                   <Button className="w-96" onClick={() => setPlantillaSelected(4)}>Plantilla cuatro</Button>
                 </div>
               </div>:(!rutaArchivo ? <Word setRutaArchivo={setRutaArchivo} tramiteId={procedimiento.id}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
-              {usuario.rol >= 3 && <PdfViewer />}
+              {usuario.rol == 3 && <PdfViewer rutaDocumento={procedimiento.documento}/>}
+              {usuario.rol >= 4 && <><PdfViewer rutaDocumento={procedimiento.documento}/>
+              <Button onClick={() => alert("Firmar")}>Firmar</Button>
+              </>}
               <Separator />
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="message" className="font-bold mb-2 mt-4">
@@ -369,7 +427,7 @@ const Bandeja = ({ className, ...props }) => {
                   id="message"
                 />
               </div>
-              <Select
+              {usuario.rol < 4 &&<Select
                 onValueChange={(e) => setUsuarioAsignado(e)}
                 className="w-full font-[OpenSans]"
               >
@@ -383,9 +441,9 @@ const Bandeja = ({ className, ...props }) => {
                         {key}
                       </SelectLabel>
                       {usuariosByGroup[key].filter(u => {
-                        if(procedimiento.estado == 1) return u.role == 2
-                        if(procedimiento.estado == 2) return u.role == 3
-                        if(procedimiento.estado == 3) return u.role == 4
+                        if(procedimiento.estado == 1) return u.rol == 2
+                        if(procedimiento.estado == 2) return u.rol == 3
+                        if(procedimiento.estado == 3) return u.rol == 4
                       }).map((u) => (
                         <SelectItem value={u.id}>
                           {u.nombres} {u.apellidos}
@@ -394,7 +452,7 @@ const Bandeja = ({ className, ...props }) => {
                     </SelectGroup>
                   ))}
                 </SelectContent>
-              </Select>
+              </Select>}
             </CardContent>
             <CardFooter className="flex flex-row gap-10">
               <Button
@@ -403,9 +461,11 @@ const Bandeja = ({ className, ...props }) => {
               >
                 <X className="mr-2 h-4 w-4" /> Rechazar
               </Button>
-              <Button className="w-full" onClick={aprobarFlujo}>
+              {usuario.rol >= 4 ? <Button className="w-full" onClick={finalizarFlujo}>
+                <Check className="mr-2 h-4 w-4" /> Finalizar
+              </Button>:<Button className="w-full" onClick={aprobarFlujo}>
                 <Check className="mr-2 h-4 w-4" /> Aprobar
-              </Button>
+              </Button>}
             </CardFooter>
             <Separator />
             <Tabs defaultValue="null" className="w-full">

@@ -28,13 +28,13 @@ import {
 import {
   Users,
   FolderOpen,
-  Fingerprint,
-  PenTool,
+  FileText,
+  MessageCircleWarning,
   Cctv,
   Cpu,
   ChevronLeft,
   Check,
-  LineChart
+  LineChart,
 } from "lucide-react";
 import {
   Card,
@@ -57,7 +57,14 @@ import { UserContext } from "@/utils/context/User/UserContext";
 
 import { useToast } from "@/components/ui/use-toast";
 import { formatDate } from "@/utils/helpers/formatter";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import FromNumberToNumber from "@/utils/helpers/FromNumberToNumber.jsx";
 
 const Administracion = () => {
@@ -69,10 +76,11 @@ const Administracion = () => {
   const [password, setPassword] = useState("");
   const [grupoGestion, setGrupoGestion] = useState();
   const [usuarios, setUsuarios] = useState([]);
-  const [rol, setRol] = useState()
+  const [rol, setRol] = useState();
   const [auditorias, setAuditorias] = useState([]);
-
+  const [tramites, setTramites] = useState([]);
   const { usuario, updateUsuario } = useContext(UserContext);
+  const [reportes, setReportes] = useState([]);
   const { toast } = useToast();
 
   const createByUser = () => {
@@ -83,7 +91,7 @@ const Administracion = () => {
         email,
         password,
         grupoId: grupoGestion,
-        rol
+        rol,
       })
       .then(
         () =>
@@ -106,7 +114,75 @@ const Administracion = () => {
     axios.get("/auditoria/all").then(({ data }) => {
       setAuditorias(data);
     });
+    axios.get("/tramite/all").then(({ data }) => setTramites(data));
+    axios.get("/reporte/all").then(({ data }) => setReportes(data));
   }, []);
+
+  const setearValores = (usuario) => {
+    setName(usuario.nombres);
+    setLastname(usuario.apellidos);
+    setEmail(usuario.email);
+    setPassword(usuario.password);
+    setGrupoGestion(usuario.grupoId);
+    setRol(usuario.rol);
+  };
+
+  const updateUser = (id) => {
+    axios
+      .put("/usuario/"+id, {
+        nombres: name,
+        apellidos: lastname,
+        email,
+        password,
+        grupoId: grupoGestion,
+        rol,
+      })
+      .then(
+        () => {
+          toast({
+            title: "Usuario editado exitosamente",
+          })
+          axios.get("/usuario/all").then(({ data }) => {
+            setUsuarios(data);
+          });
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  }
+
+  const banUser = (id, status) => {
+    axios
+      .put("/usuario/"+id, {
+        ban:!status
+      })
+      .then(
+        () => {
+          if(status){
+            toast({
+              title: "Usuario desbloqueado exitosamente",
+            })
+          }else{
+            toast({
+              title: "Usuario restringido exitosamente",
+            })
+          }
+          axios.get("/usuario/all").then(({ data }) => {
+            setUsuarios(data);
+          });
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  }
 
   return (
     <motion.div
@@ -158,9 +234,24 @@ const Administracion = () => {
                 >
                   <LineChart />
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-bold leading-none">Estadisticas</p>
+                    <p className="text-sm font-bold leading-none">
+                      Estadisticas
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       Mira en tiempo real las estadisticas con gráficas
+                    </p>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setServiceSelected(4)}
+                  className="hover:border-blue-200 hover:bg-blue-100 transition-all cursor-pointer flex items-center space-x-4 rounded-md border p-4"
+                >
+                  <FileText />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-bold leading-none">Tramites</p>
+                    <p className="text-sm text-muted-foreground">
+                      Obten información sobre los trámites dentro de la
+                      plataforma
                     </p>
                   </div>
                 </div>
@@ -202,6 +293,7 @@ const Administracion = () => {
                     <TableHead>Correo</TableHead>
                     <TableHead>Grupo</TableHead>
                     <TableHead>Rol</TableHead>
+                    <TableHead>Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -218,6 +310,134 @@ const Administracion = () => {
                         {u.rol == 2 && "Proyector"}
                         {u.rol == 3 && "Revisor"}
                         {u.rol == 4 && "Firmante"}
+                      </TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger>
+                            <Button onClick={() => setearValores(u)}>
+                              Editar
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Ingresa los datos</DialogTitle>
+                              <DialogDescription
+                                className={"font-[OpenSans] text-sm mb-6"}
+                              >
+                                Ingresa los datos del usuario que deseas
+                                registrar en el sistema
+                              </DialogDescription>
+                              <div className="flex flex-col pt-3 gap-4">
+                                <div className="grid gap-2">
+                                  <Label htmlFor="email">Nombres</Label>
+                                  <Input
+                                    className={"font-[OpenSans] text-sm"}
+                                    onChange={(e) => setName(e.target.value)}
+                                    value={name}
+                                    type="text"
+                                    id="name"
+                                  />
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="email">Apellidos</Label>
+                                  <Input
+                                    className={"font-[OpenSans] text-sm"}
+                                    type="text"
+                                    onChange={(e) =>
+                                      setLastname(e.target.value)
+                                    }
+                                    value={lastname}
+                                    id="lastname"
+                                  />
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="email">
+                                    Correo electrónico
+                                  </Label>
+                                  <Input
+                                    className={"font-[OpenSans] text-sm"}
+                                    type="email"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={email}
+                                    id="email"
+                                  />
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="username">
+                                    Grupo de gestion
+                                  </Label>
+                                  <Select
+                                    onValueChange={(e) => setGrupoGestion(e)}
+                                    value={grupoGestion}
+                                    className="w-full font-[OpenSans]"
+                                  >
+                                    <SelectTrigger className="w-full text-left h-fit font-[OpenSans]">
+                                      <SelectValue placeholder="Seleccionar grupo" />
+                                    </SelectTrigger>
+                                    <SelectContent className="font-[OpenSans]">
+                                      <SelectGroup>
+                                        <SelectItem value={100}>
+                                          ALMACEN
+                                        </SelectItem>
+                                        <SelectItem value={200}>
+                                          FINANCIERA
+                                        </SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="username">Rol</Label>
+                                  <Select
+                                    onValueChange={(e) => setRol(e)}
+                                    value={rol}
+                                    className="w-full font-[OpenSans]"
+                                  >
+                                    <SelectTrigger className="w-full text-left h-fit font-[OpenSans]">
+                                      <SelectValue placeholder="Seleccionar un rol" />
+                                    </SelectTrigger>
+                                    <SelectContent className="font-[OpenSans]">
+                                      <SelectGroup>
+                                        <SelectItem value={1}>
+                                          Repartidor
+                                        </SelectItem>
+                                        <SelectItem value={2}>
+                                          Proyector
+                                        </SelectItem>
+                                        <SelectItem value={3}>
+                                          Revisor
+                                        </SelectItem>
+                                        <SelectItem value={4}>
+                                          Firmante
+                                        </SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="grid gap-2">
+                                  <Label htmlFor="email">Contraseña</Label>
+                                  <Input
+                                    className={"font-[OpenSans] text-sm"}
+                                    type="password"
+                                    onChange={(e) =>
+                                      setPassword(e.target.value)
+                                    }
+                                    value={password}
+                                    id="password"
+                                  />
+                                </div>
+                              </div>
+                            </DialogHeader>
+                            <DialogFooter>
+                            <Button className={`${u.ban ?"bg-green-600 hover:bg-green-800":"bg-red-600 hover:bg-red-800"}`} onClick={() => banUser(u.id, u.ban)}>
+                                {u.ban ? "Habilitar acceso":"Restringir acceso"}
+                              </Button>
+                              <Button onClick={() => updateUser(u.id)}>
+                                Editar usuario
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -423,7 +643,148 @@ const Administracion = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <FromNumberToNumber className={"font-bold"} from={0} to={10}/>
+              <div className="grid grid-cols-5 gap-10">
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Tramites</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center -mt-4 gap-3">
+                    <FileText className="min-w-5 min-h-5 text-gray-400" />
+                    <FromNumberToNumber
+                      className={"font-bold text-2xl"}
+                      from={0}
+                      to={tramites?.length}
+                    />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Usuarios</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center -mt-4 gap-3">
+                    <Users className="min-w-5 min-h-5 text-gray-400" />
+                    <FromNumberToNumber
+                      className={"font-bold text-2xl"}
+                      from={0}
+                      to={usuarios?.length}
+                    />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Auditoria</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center -mt-4 gap-3">
+                    <FolderOpen className="min-w-5 min-h-5 text-gray-400" />
+                    <FromNumberToNumber
+                      className={"font-bold text-2xl"}
+                      from={0}
+                      to={auditorias?.length}
+                    />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Reportes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center -mt-4 gap-3">
+                    <MessageCircleWarning className="min-w-5 min-h-5 text-gray-400" />
+                    <FromNumberToNumber
+                      className={"font-bold text-2xl"}
+                      from={0}
+                      to={reportes?.length}
+                    />
+                  </CardContent>
+                </Card>
+                <Card className="col-span-1">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Grupos</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex items-center -mt-4 gap-3">
+                    <MessageCircleWarning className="min-w-5 min-h-5 text-gray-400" />
+                    <FromNumberToNumber
+                      className={"font-bold text-2xl"}
+                      from={0}
+                      to={2}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      {serviceSelected == 4 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="font-[OpenSans] px-5 py-5">
+            <CardHeader>
+              <CardTitle className="flex gap-4 items-center">
+                <ChevronLeft
+                  className="mt-1 cursor-pointer"
+                  onClick={() => setServiceSelected(null)}
+                />{" "}
+                Tramites
+              </CardTitle>
+              <CardDescription>
+                Obten información sobre los trámites dentro de la plataforma
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                {!tramites?.length ? (
+                  <div className="h-40 text-center">
+                    <TextSelect className="m-auto text-gray-300 h-14 w-14 my-4" />
+                    <h1 className="text-muted-foreground text-sm">
+                      No tienes nada pendiente
+                    </h1>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Id</TableHead>
+                        <TableHead>Usuario</TableHead>
+                        <TableHead>Tramite</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Descripción</TableHead>
+                        {/* <TableHead>Ver</TableHead> */}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {tramites
+                        .sort((a, b) => a.id - b.id)
+                        .map((t) => (
+                          <TableRow key={t.id}>
+                            <TableCell className="font-bold">{t.id}</TableCell>
+                            <TableCell>
+                              {t.usuario.nombres} {t.usuario.apellidos}
+                            </TableCell>
+                            <TableCell>
+                              {t.tramite == 1
+                                ? "Solicitud de alimentos"
+                                : "Solicitud de insumos"}
+                            </TableCell>
+                            <TableCell>
+                              <span className="rounded-lg bg-green-600 text-white px-2 py-1">
+                                {t.estado == 1 && "Nuevo"}
+                                {t.estado == 2 && "Repartido"}
+                                {t.estado == 3 && "Proyectado"}
+                                {t.estado == 4 && "Revisado"}
+                                {t.estado == 5 && "Firmado"}
+                              </span>
+                            </TableCell>
+                            <TableCell>{t.descripcion}</TableCell>
+                            {/* <TableCell>
+                            <Button onClick={() => setProcedimiento(t)}>
+                              Ver
+                            </Button>
+                          </TableCell> */}
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
             </CardContent>
           </Card>
         </motion.div>

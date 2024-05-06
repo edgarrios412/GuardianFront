@@ -66,6 +66,13 @@ function LoginForm({ className, setIsLogged }) {
       .then(
         ({ data }) => {
           console.log(data);
+          if(data.ban){
+            setIsLoader(false);
+            return toast({
+              variant:"destructive",
+              title:"Tu usuario está restringido por el sistema"
+            })
+          }
           if (data) {
             localStorage.setItem("user", JSON.stringify(data));
             setUsuario(data)

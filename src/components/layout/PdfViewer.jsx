@@ -12,16 +12,18 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import es_ES from '@react-pdf-viewer/locales/lib/es_ES.json';
+import ModalFirma from "./ModalFirma";
 // Create new plugin instance
 
 const PdfViewer = ({ rutaDocumento }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [documento, setDocumento] = useState(null);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div>
 
-      <div
+      {rutaDocumento && <div
         style={{
           width: "45vw",
           height: "80vh",
@@ -40,24 +42,18 @@ const PdfViewer = ({ rutaDocumento }) => {
             ]}
           />
         </Worker>
-      </div>
-
-      {/* <Link to="/guardian-app/flujo-trabajo/read">
-            <Button
-              type="submit"
-              className="btn btn-info"
-              onClick={sendData}
-            >
-              Firmar
-            </Button>
-          </Link>
-          <Button
-            type="submit"
-            className="btn btn-danger"
-            onClick={sendDataToAPI}
-          >
-            Rechazar
-          </Button> */}
+      </div>}
+          {/* <ModalFirma
+                isOpen={isOpen}
+                close={() => setIsOpen(false)}
+                // submit={(e) => {
+                //     onSubmit(e);
+                //     setIsOpen(false);
+                // }}
+                // setData={setData}
+                id={0}
+                rutaArchivo={rutaDocumento}
+      /> */}
     </div>
   );
 };
