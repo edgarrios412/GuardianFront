@@ -7,6 +7,7 @@ import axios from 'axios';
 import { setCulture, L10n } from '@syncfusion/ej2-base';
 import json from "./WordEs.json"
 import { Button } from '../ui/button';
+import { useToast } from '../ui/use-toast';
 // import { TitleBar } from './title-bar';
 // import './default.component.css';
 DocumentEditorContainerComponent.Inject(Toolbar);
@@ -19,7 +20,7 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
     // const [rutaArchivo, setRutaArchivo] = React.useState()
     const [rutaDocumentoActual, setRutaDocumentoActual] = React.useState()
     const [guardando, setGuardando] = React.useState(false)
-
+    const {toast} = useToast()
     const [documento, setDocumento] = React.useState("")
     let titleBar;
 
@@ -132,52 +133,10 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
     }, [])
 
     const guardarDatos = () => {
-        // setGuardando(true)
-        // Swal.mixin({
-        //     toast: true,
-        //     position: "top",
-        //     showConfirmButton: false,
-        //     timer: 2000,
-        //     timerProgressBar: true,
-        //     didOpen: (toast) => {
-        //         toast.onmouseenter = Swal.stopTimer;
-        //         toast.onmouseleave = Swal.resumeTimer;
-        //     }
-        // }).fire({
-        //     icon: "info",
-        //     title: "Guardando documento, espera un momento"
-        // });
-        // if (creado) {
-        //     container.current.documentEditor.saveAsBlob('Docx').then((exportedDocument) => {
-        //         const form = new FormData()
-        //         const rutaDocumentoAnterior = rutaDocumentoActual
-        //         var file = new File([exportedDocument], "word.docx");
-        //         form.append("file", file)
-        //         form.append("numeroRadicado", "1234512345")
-        //         form.append("flujoTrabajo", 0)
-        //         form.append("idUsuario", 0)
-        //         axios
-        //             .post(
-        //                 "https://backguardian.supervigilancia.gov.co:8443/guardian/cargar/archiv", form)
-        //             .then((datos) => {
-        //                 setGuardando(false)
-        //                 setGuardado(true)
-        //                 Swal.fire("Exitoso", "Documento guardado exitosamente", "success")
-        //                 setRutaArchivo(datos.data[0].ruta)
-        //                 // setIsOpen(true)
-        //                 setData({
-        //                     rutaArchivoWord: rutaDocumentoAnterior,
-        //                     rutaDocumentoAnterior,
-        //                     rutaDocumento: datos.data[0].ruta,
-        //                     creado: true
-        //                 })
-        //                 return
-        //             }, (e) => {
-        //                 setGuardando(false);
-        //                 Swal.fire("Error", e, "error")
-        //             })
-        //     })
-        // } else {
+        toast({
+            title: "Guardando documento",
+            description:"Espera un momento"
+          })
             container.current.documentEditor.saveAsBlob('Docx').then((exportedDocument) => {
                 const form = new FormData()
                 var file = new File([exportedDocument], "word.docx");
@@ -187,20 +146,14 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
                     .post(
                         "/documentos/convert/toPdf", form)
                     .then(({data}) => {
-                        // setGuardando(false)
-                        // setGuardado(true)
+                        toast({
+                            title: "Documento convertido a PDF exitosamente",
+                            description:"Ya puedes aprobar el trámite",
+                          })
                         setRutaArchivo(data)
-                        // Swal.fire("Exitoso", "Documento guardado exitosamente", "success")
-                        // setData({
-                        //     rutaDocumento: datos.data[0].ruta,
-                        // })
                         return
-                    }, (e) => {
-                        // setGuardando(false);
-                        // Swal.fire("Error", e, "error")
                     })
             })
-        // }
     }
 
     useEffect(() => {

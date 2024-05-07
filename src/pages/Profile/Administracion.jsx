@@ -35,6 +35,9 @@ import {
   ChevronLeft,
   Check,
   LineChart,
+  BookUser,
+  TextSelect,
+  NotebookText,
 } from "lucide-react";
 import {
   Card,
@@ -79,9 +82,12 @@ const Administracion = () => {
   const [rol, setRol] = useState();
   const [auditorias, setAuditorias] = useState([]);
   const [tramites, setTramites] = useState([]);
+  const [grupos, setGrupos] = useState([]);
   const { usuario, updateUsuario } = useContext(UserContext);
   const [reportes, setReportes] = useState([]);
   const { toast } = useToast();
+  const [id, setId] = useState();
+  const [listaTramites, setListaTramites] = useState([])
 
   const createByUser = () => {
     axios
@@ -115,6 +121,8 @@ const Administracion = () => {
       setAuditorias(data);
     });
     axios.get("/tramite/all").then(({ data }) => setTramites(data));
+    axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+    axios.get("/grupo").then(({ data }) => setGrupos(data));
     axios.get("/reporte/all").then(({ data }) => setReportes(data));
   }, []);
 
@@ -129,7 +137,7 @@ const Administracion = () => {
 
   const updateUser = (id) => {
     axios
-      .put("/usuario/"+id, {
+      .put("/usuario/" + id, {
         nombres: name,
         apellidos: lastname,
         email,
@@ -141,7 +149,7 @@ const Administracion = () => {
         () => {
           toast({
             title: "Usuario editado exitosamente",
-          })
+          });
           axios.get("/usuario/all").then(({ data }) => {
             setUsuarios(data);
           });
@@ -153,23 +161,23 @@ const Administracion = () => {
             description: e.response.data,
           })
       );
-  }
+  };
 
   const banUser = (id, status) => {
     axios
-      .put("/usuario/"+id, {
-        ban:!status
+      .put("/usuario/" + id, {
+        ban: !status,
       })
       .then(
         () => {
-          if(status){
+          if (status) {
             toast({
               title: "Usuario desbloqueado exitosamente",
-            })
-          }else{
+            });
+          } else {
             toast({
               title: "Usuario restringido exitosamente",
-            })
+            });
           }
           axios.get("/usuario/all").then(({ data }) => {
             setUsuarios(data);
@@ -182,7 +190,92 @@ const Administracion = () => {
             description: e.response.data,
           })
       );
-  }
+  };
+
+  const crearGrupo = () => {
+    axios
+      .post("/grupo", {
+        nombre: name,
+        id: id,
+      })
+      .then(
+        () => {
+          axios.get("/grupo").then(({ data }) => setGrupos(data));
+          toast({
+            title: "Grupo creado exitosamente",
+          });
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  };
+
+  const editarGrupo = () => {
+    axios
+      .put("/grupo/"+id, {
+        nombre: name,
+      })
+      .then(
+        () => {
+          toast({
+            title: "Grupo editado exitosamente",
+          });
+          axios.get("/grupo").then(({ data }) => setGrupos(data));
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  };
+
+  const editarTramite = () => {
+    axios
+      .put("/tramite/listaTramite/editar/"+id, {
+        nombre: name,
+      })
+      .then(
+        () => {
+          toast({
+            title: "Tramite editado exitosamente",
+          });
+          axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  };
+
+  const crearTramite = () => {
+    axios
+      .post("/tramite/listaTramite/crear", {
+        nombre: name,
+      })
+      .then(
+        () => {
+          axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+          toast({
+            title: "Tramite creado exitosamente",
+          });
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  };
 
   return (
     <motion.div
@@ -252,6 +345,30 @@ const Administracion = () => {
                     <p className="text-sm text-muted-foreground">
                       Obten información sobre los trámites dentro de la
                       plataforma
+                    </p>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setServiceSelected(5)}
+                  className="hover:border-blue-200 hover:bg-blue-100 transition-all cursor-pointer flex items-center space-x-4 rounded-md border p-4"
+                >
+                  <BookUser />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-bold leading-none">Grupos</p>
+                    <p className="text-sm text-muted-foreground">
+                      Administra los grupos de la plataforma desde éste apartado
+                    </p>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setServiceSelected(6)}
+                  className="hover:border-blue-200 hover:bg-blue-100 transition-all cursor-pointer flex items-center space-x-4 rounded-md border p-4"
+                >
+                  <NotebookText />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-bold leading-none">Administrar tramites</p>
+                    <p className="text-sm text-muted-foreground">
+                      Agrega, edita y borra trámites del sistema
                     </p>
                   </div>
                 </div>
@@ -376,12 +493,11 @@ const Administracion = () => {
                                     </SelectTrigger>
                                     <SelectContent className="font-[OpenSans]">
                                       <SelectGroup>
-                                        <SelectItem value={100}>
-                                          ALMACEN
-                                        </SelectItem>
-                                        <SelectItem value={200}>
-                                          FINANCIERA
-                                        </SelectItem>
+                                        {grupos.map((g) => (
+                                          <SelectItem value={g.id}>
+                                            {g.nombre}
+                                          </SelectItem>
+                                        ))}
                                       </SelectGroup>
                                     </SelectContent>
                                   </Select>
@@ -429,8 +545,17 @@ const Administracion = () => {
                               </div>
                             </DialogHeader>
                             <DialogFooter>
-                            <Button className={`${u.ban ?"bg-green-600 hover:bg-green-800":"bg-red-600 hover:bg-red-800"}`} onClick={() => banUser(u.id, u.ban)}>
-                                {u.ban ? "Habilitar acceso":"Restringir acceso"}
+                              <Button
+                                className={`${
+                                  u.ban
+                                    ? "bg-green-600 hover:bg-green-800"
+                                    : "bg-red-600 hover:bg-red-800"
+                                }`}
+                                onClick={() => banUser(u.id, u.ban)}
+                              >
+                                {u.ban
+                                  ? "Habilitar acceso"
+                                  : "Restringir acceso"}
                               </Button>
                               <Button onClick={() => updateUser(u.id)}>
                                 Editar usuario
@@ -520,8 +645,9 @@ const Administracion = () => {
                           </SelectTrigger>
                           <SelectContent className="font-[OpenSans]">
                             <SelectGroup>
-                              <SelectItem value="100">ALMACEN</SelectItem>
-                              <SelectItem value="200">FINANCIERA</SelectItem>
+                              {grupos.map((g) => (
+                                <SelectItem value={g.id}>{g.nombre}</SelectItem>
+                              ))}
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -644,69 +770,69 @@ const Administracion = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-5 gap-10">
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
-                    <CardTitle className="text-lg">Tramites</CardTitle>
+                    <FileText className="min-w-7 min-h-7" />
                   </CardHeader>
-                  <CardContent className="flex items-center -mt-4 gap-3">
-                    <FileText className="min-w-5 min-h-5 text-gray-400" />
+                  <CardContent className="items-center -mt-4 gap-3">
                     <FromNumberToNumber
-                      className={"font-bold text-2xl"}
+                      className={"text-center font-bold text-2xl"}
                       from={0}
                       to={tramites?.length}
                     />
+                    <CardTitle className="text-lg">Tramites</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
-                    <CardTitle className="text-lg">Usuarios</CardTitle>
+                    <Users className="min-w-7 min-h-7" />
                   </CardHeader>
-                  <CardContent className="flex items-center -mt-4 gap-3">
-                    <Users className="min-w-5 min-h-5 text-gray-400" />
+                  <CardContent className="items-center -mt-4 gap-3">
                     <FromNumberToNumber
-                      className={"font-bold text-2xl"}
+                      className={"text-center font-bold text-2xl"}
                       from={0}
                       to={usuarios?.length}
                     />
+                    <CardTitle className="text-lg">Usuarios</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
-                    <CardTitle className="text-lg">Auditoria</CardTitle>
+                    <FolderOpen className="min-w-7 min-h-7" />
                   </CardHeader>
-                  <CardContent className="flex items-center -mt-4 gap-3">
-                    <FolderOpen className="min-w-5 min-h-5 text-gray-400" />
+                  <CardContent className="items-center -mt-4 gap-3">
                     <FromNumberToNumber
-                      className={"font-bold text-2xl"}
+                      className={"text-center font-bold text-2xl"}
                       from={0}
                       to={auditorias?.length}
                     />
+                    <CardTitle className="text-lg">Auditoria</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
-                    <CardTitle className="text-lg">Reportes</CardTitle>
+                    <MessageCircleWarning className="min-w-7 min-h-7" />
                   </CardHeader>
-                  <CardContent className="flex items-center -mt-4 gap-3">
-                    <MessageCircleWarning className="min-w-5 min-h-5 text-gray-400" />
+                  <CardContent className="items-center -mt-4 gap-3">
                     <FromNumberToNumber
-                      className={"font-bold text-2xl"}
+                      className={"text-center font-bold text-2xl"}
                       from={0}
                       to={reportes?.length}
                     />
+                    <CardTitle className="text-lg">Reportes</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1">
+                <Card className="col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
-                    <CardTitle className="text-lg">Grupos</CardTitle>
+                    <MessageCircleWarning className="min-w-7 min-h-7" />
                   </CardHeader>
-                  <CardContent className="flex items-center -mt-4 gap-3">
-                    <MessageCircleWarning className="min-w-5 min-h-5 text-gray-400" />
+                  <CardContent className="items-center -mt-4 gap-3">
                     <FromNumberToNumber
-                      className={"font-bold text-2xl"}
+                      className={"text-center font-bold text-2xl"}
                       from={0}
                       to={2}
                     />
+                    <CardTitle className="text-lg">Grupos</CardTitle>
                   </CardContent>
                 </Card>
               </div>
@@ -760,17 +886,19 @@ const Administracion = () => {
                               {t.usuario.nombres} {t.usuario.apellidos}
                             </TableCell>
                             <TableCell>
-                              {t.tramite == 1
-                                ? "Solicitud de alimentos"
-                                : "Solicitud de insumos"}
+                              {t.listatramite.nombre}
                             </TableCell>
                             <TableCell>
-                              <span className="rounded-lg bg-green-600 text-white px-2 py-1">
+                              <span
+                                className={`rounded-lg ${
+                                  t.estado >= 5 ? "bg-green-600" : "bg-blue-600"
+                                } text-white px-2 py-1`}
+                              >
                                 {t.estado == 1 && "Nuevo"}
                                 {t.estado == 2 && "Repartido"}
                                 {t.estado == 3 && "Proyectado"}
                                 {t.estado == 4 && "Revisado"}
-                                {t.estado == 5 && "Firmado"}
+                                {t.estado == 5 && "Finalizado"}
                               </span>
                             </TableCell>
                             <TableCell>{t.descripcion}</TableCell>
@@ -785,6 +913,255 @@ const Administracion = () => {
                   </Table>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      {serviceSelected == 5 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="font-[OpenSans] px-5 py-5">
+            <CardHeader>
+              <CardTitle className="flex gap-4 items-center">
+                <ChevronLeft
+                  className="mt-1 cursor-pointer"
+                  onClick={() => setServiceSelected(null)}
+                />{" "}
+                Grupos
+              </CardTitle>
+              <CardDescription>
+                Administra los grupos de la plataforma desde éste apartado
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                {!grupos?.length ? (
+                  <div className="h-40 text-center">
+                    <TextSelect className="m-auto text-gray-300 h-14 w-14 my-4" />
+                    <h1 className="text-muted-foreground text-sm">
+                      No hay grupos registrados
+                    </h1>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Id</TableHead>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Miembros</TableHead>
+                        <TableHead>Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {grupos
+                        .sort((a, b) => a.id - b.id)
+                        .map((t) => (
+                          <TableRow key={t.id}>
+                            <TableCell className="font-bold">{t.id}</TableCell>
+                            <TableCell>{t.nombre}</TableCell>
+                            <TableCell>{t.usuarios.length}</TableCell>
+                            <TableCell>
+                              <Dialog>
+                                <DialogTrigger>
+                                  <Button onClick={() => {setName(t.nombre); setId(t.id)}}>Editar</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Editar grupo</DialogTitle>
+                                    <DialogDescription
+                                      className={"font-[OpenSans] text-sm mb-6"}
+                                    >
+                                      Cambia los datos que necesites para editar el grupo
+                                    </DialogDescription>
+                                    <div className="flex flex-col pt-3 gap-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="email">Nombre</Label>
+                                        <Input
+                                          placeholder="Escribe el nuevo nombre del grupo"
+                                          className={"font-[OpenSans] text-sm"}
+                                          type="text"
+                                          onChange={(e) =>
+                                            setName(e.target.value)
+                                          }
+                                          value={name}
+                                          id="name"
+                                        />
+                                      </div>
+                                    </div>
+                                  </DialogHeader>
+                                  <DialogFooter>
+                                    <Button onClick={editarGrupo}>
+                                      Guardar
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+              <Dialog>
+                <DialogTrigger>
+                  <Button className="mt-5">Crear grupo</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Ingresa los datos</DialogTitle>
+                    <DialogDescription
+                      className={"font-[OpenSans] text-sm mb-6"}
+                    >
+                      Ingresa los datos del grupo que deseas crear en el sistema
+                    </DialogDescription>
+                    <div className="flex flex-col pt-3 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">ID</Label>
+                        <Input
+                          placeholder="Escribe el ID del grupo"
+                          className={"font-[OpenSans] text-sm"}
+                          onChange={(e) => setId(e.target.value)}
+                          value={id}
+                          type="number"
+                          id="name"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Nombre</Label>
+                        <Input
+                          placeholder="Escribe el nombre del grupo"
+                          className={"font-[OpenSans] text-sm"}
+                          type="text"
+                          onChange={(e) => setName(e.target.value)}
+                          value={name}
+                          id="lastname"
+                        />
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button onClick={crearGrupo}>Crear grupo</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      {serviceSelected == 6 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="font-[OpenSans] px-5 py-5">
+            <CardHeader>
+              <CardTitle className="flex gap-4 items-center">
+                <ChevronLeft
+                  className="mt-1 cursor-pointer"
+                  onClick={() => setServiceSelected(null)}
+                />{" "}
+                Administrar tramites
+              </CardTitle>
+              <CardDescription>
+              Agrega, edita y borra trámites del sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                {!listaTramites?.length ? (
+                  <div className="h-40 text-center">
+                    <TextSelect className="m-auto text-gray-300 h-14 w-14 my-4" />
+                    <h1 className="text-muted-foreground text-sm">
+                      No hay tramites registrados
+                    </h1>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Id</TableHead>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {listaTramites
+                        .sort((a, b) => a.id - b.id)
+                        .map((t) => (
+                          <TableRow key={t.id}>
+                            <TableCell className="font-bold">{t.id}</TableCell>
+                            <TableCell>{t.nombre}</TableCell>
+                            <TableCell>
+                              <Dialog>
+                                <DialogTrigger>
+                                  <Button onClick={() => {setName(t.nombre); setId(t.id)}}>Editar</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Editar tramite</DialogTitle>
+                                    <DialogDescription
+                                      className={"font-[OpenSans] text-sm mb-6"}
+                                    >
+                                      Cambia los datos que necesites para editar el tramite
+                                    </DialogDescription>
+                                    <div className="flex flex-col pt-3 gap-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="email">Nombre</Label>
+                                        <Input
+                                          placeholder="Escribe el nuevo nombre del grupo"
+                                          className={"font-[OpenSans] text-sm"}
+                                          type="text"
+                                          onChange={(e) =>
+                                            setName(e.target.value)
+                                          }
+                                          value={name}
+                                          id="name"
+                                        />
+                                      </div>
+                                    </div>
+                                  </DialogHeader>
+                                  <DialogFooter>
+                                    <Button onClick={editarTramite}>
+                                      Guardar
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+              <Dialog>
+                <DialogTrigger>
+                  <Button className="mt-5">Crear tramite</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Ingresa los datos</DialogTitle>
+                    <DialogDescription
+                      className={"font-[OpenSans] text-sm mb-6"}
+                    >
+                      Ingresa los datos del tramite que deseas crear en el sistema
+                    </DialogDescription>
+                    <div className="flex flex-col pt-3 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Nombre</Label>
+                        <Input
+                          placeholder="Escribe el nombre del grupo"
+                          className={"font-[OpenSans] text-sm"}
+                          type="text"
+                          onChange={(e) => setName(e.target.value)}
+                          value={name}
+                          id="lastname"
+                        />
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button onClick={crearTramite}>Crear tramite</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         </motion.div>

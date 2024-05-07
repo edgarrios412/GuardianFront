@@ -69,7 +69,6 @@ const Profile = () => {
 
   return (
     <div className="h-[100vh] w-[100%]">
-      <ModalFormSolicitud open={formSolicitud} setOpen={setFormSolicitud}/>
       <AlertDialog open={false}>
       <AlertDialogContent className="font-[OpenSans]">
         <AlertDialogHeader>
@@ -160,33 +159,6 @@ const Profile = () => {
                   />
                 ))}
               {sizePanel > 14 && "Bandeja"}
-            </Button>
-            <Button
-              onClick={() => setFormSolicitud(true)}
-              className={`font-[OpenSans] bg-transparent mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200`}
-            >
-              {(sizePanel > 18 || sizePanel < 14) &&
-                (sizePanel < 14 ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger className="w-full">
-                        <Archive
-                          className={`${
-                            sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"
-                          }`}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p>Crear solicitud</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <Archive
-                    className={`${sizePanel < 14 ? "m-auto" : "mr-4 h-4 w-4"}`}
-                  />
-                ))}
-              {sizePanel > 14 && "Crear solicitud"}
             </Button>
             <Button
               onClick={() => setPage(2)}

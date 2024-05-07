@@ -102,6 +102,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PdfViewer from "@/components/layout/PdfViewer";
 import { SelectLabel } from "@radix-ui/react-select";
 import Word from "@/components/layout/Word";
+import ModalFormSolicitud from "@/components/layout/ModalFormSolicitud";
 
 const Bandeja = ({ className, ...props }) => {
   // const { usuario, updateUsuario } = useContext(UserContext);
@@ -118,6 +119,7 @@ const Bandeja = ({ className, ...props }) => {
   const [observacion, setObservacion] = useState("")
   const [plantillaSelected, setPlantillaSelected] = useState(null)
   const [rutaArchivo, setRutaArchivo] = useState(null)
+  const [formSolicitud, setFormSolicitud] = useState(false)
 
   useEffect(() => {
     axios
@@ -146,7 +148,10 @@ const Bandeja = ({ className, ...props }) => {
         usuarioHistorial: usuario.id
       })
       .then(({ data }) => {
-        alert("Editado");
+        toast({
+          title: "Tramite enviado exitosamente",
+          description:`El trámite ahora se encuenta en la bandeja de ${usuarioSelected.nombres}`
+        })
         axios
           .get("/tramite/usuario/" + usuario.id)
           .then(({ data }) => setTramites(data));
@@ -159,10 +164,14 @@ const Bandeja = ({ className, ...props }) => {
       .put("/tramite/" + procedimiento.id, {
         estado: 5,
         observacion,
+        usuarioAsignado:null,
         usuarioHistorial: usuario.id
       })
       .then(({ data }) => {
-        alert("Editado");
+        toast({
+          title: "Tramite finalizado",
+          description:`El trámite ahora se encuenta en la bandeja de tramites finalizados`
+        })
         axios
           .get("/tramite/usuario/" + usuario.id)
           .then(({ data }) => setTramites(data));
@@ -173,7 +182,10 @@ const Bandeja = ({ className, ...props }) => {
   const uploadFile = () => {
     const form = new FormData()
     form.append("file", documento)
-    axios.post("/documentos/"+procedimiento.id, form).then(() => alert("Subido"))
+    axios.post("/documentos/"+procedimiento.id, form).then(() => toast({
+      title: "Documento cargado exitosamente",
+      description:"El documento ya está anexado al trámite aunque no lo veas reflejado automaticamente"
+    }))
   }
 
   return (
@@ -182,14 +194,22 @@ const Bandeja = ({ className, ...props }) => {
       animate={{ opacity: 1 }}
       className="bg-gray-100 font-[OpenSans] px-20 py-10"
     >
+      <ModalFormSolicitud open={formSolicitud} setOpen={setFormSolicitud}/>
       <div className="flex gap-10">
         {!procedimiento ? (
           <Card className={cn("w-full h-fit pb-6", className)} {...props}>
-            <CardHeader>
-              <CardTitle>Bandeja</CardTitle>
+            <CardHeader className="flex flex-row justify-between">
+              <div>
+              <CardTitle className="mb-2">Bandeja</CardTitle>
               <CardDescription>
                 Tienes {tramites?.length} procedimientos pendientes
               </CardDescription>
+              </div>
+              <Button
+              onClick={() => setFormSolicitud(true)}
+            >
+              Crear solicitud
+            </Button>
             </CardHeader>
             <CardContent className="h-fit">
               <div>
@@ -217,7 +237,7 @@ const Bandeja = ({ className, ...props }) => {
                         <TableRow key={t.id}>
                           <TableCell className="font-bold">{t.id}</TableCell>
                           <TableCell>{t.usuario.nombres} {t.usuario.apellidos}</TableCell>
-                          <TableCell>{t.tramite == 1 ? "Solicitud de alimentos" : "Solicitud de insumos"}</TableCell>
+                          <TableCell>{t.listatramite.nombre}</TableCell>
                           <TableCell>
                             <span className="rounded-lg bg-green-600 text-white px-2 py-1">
                             {t.estado == 1 && "Nuevo"}
@@ -376,9 +396,33 @@ const Bandeja = ({ className, ...props }) => {
                             Acá puedes ver todos los tramites realizados por el
                             usuario
                           </DialogDescription>
-                          <h3 className="my-20 text-center font-bold">
-                            EN DESARROLLO
-                          </h3>
+                          <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Fecha</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Descripcion</TableHead>
+                        <TableHead>Tramite</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {procedimiento.usuario.tramites.sort((a,b) => a.id-b.id).map((t) => (
+                        <TableRow key={t.id}>
+                          <TableCell>{formatDate(t.fechaCreacion)}</TableCell>
+                          <TableCell><span className="rounded-lg bg-green-600 text-white px-2 py-1">
+                            {t.estado == 1 && "Nuevo"}
+                            {t.estado == 2 && "Repartido"}
+                            {t.estado == 3 && "Proyectado"}
+                            {t.estado == 4 && "Revisado"}
+                            {t.estado == 5 && "Firmado"}
+                            </span></TableCell>
+                          <TableCell>{t.descripcion}</TableCell>
+                          <TableCell>{t.listatramite.nombre}</TableCell>
+
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                         </div>
                       )}
                     </DialogContent>
@@ -386,7 +430,7 @@ const Bandeja = ({ className, ...props }) => {
                 </div>
                 <div>
                   <Label className="font-bold">Tramite</Label>
-                  <p>{procedimiento.tramite == 1 ? "Solicitud de alimentos" : "Solicitud de insumos"}</p>
+                  <p>{procedimiento.listatramite.nombre}</p>
                 </div>
                 <div>
                   <Label className="font-bold">Fecha</Label>

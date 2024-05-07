@@ -27,7 +27,14 @@ import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { SelectLabel } from "@radix-ui/react-select";
 
@@ -50,13 +57,20 @@ export default ({ open, setOpen, setIsLogged }) => {
 
 function LoginForm({ className, setIsLogged }) {
   const [descripcion, setDescripcion] = useState("");
-  const [tramite, setTramite] = useState()
-  const [grupoGestion, setGrupoGestion] = useState()
-  const [usuario, setUsuario] = useState(null)
+  const [tramite, setTramite] = useState();
+  const [grupoGestion, setGrupoGestion] = useState();
+  const [usuario, setUsuario] = useState(null);
   const [isLoader, setIsLoader] = useState(false);
-  const usuarioLogeado = JSON.parse(localStorage.getItem("user"))
+  const usuarioLogeado = JSON.parse(localStorage.getItem("user"));
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [grupos, setGrupos] = useState([])
+  const [listaTramites, setListaTramites] = useState([])
+
+  useEffect(() => {
+    axios.get("/grupo").then(({data}) => setGrupos(data))
+    axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+  },[])
 
   const createSolicitud = (e) => {
     e.preventDefault();
@@ -66,8 +80,8 @@ function LoginForm({ className, setIsLogged }) {
       .post("/tramite", {
         descripcion,
         tramite,
-        usuarioId:usuarioLogeado.id,
-        grupoGestion
+        usuarioId: usuarioLogeado.id,
+        grupoGestion,
       })
       .then(
         ({ data }) => {
@@ -75,10 +89,10 @@ function LoginForm({ className, setIsLogged }) {
           toast({
             title: "Solicitud enviada con éxito",
           });
-          setUsuario("")
-          setDescripcion("")
-          setTramite("")
-          setIsLoader(false)
+          setUsuario("");
+          setDescripcion("");
+          setTramite("");
+          setIsLoader(false);
         },
         (e) => {
           toast({
@@ -108,28 +122,36 @@ function LoginForm({ className, setIsLogged }) {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="username">Solicitud</Label>
-        <Select onValueChange={(e) => setTramite(e)} value={tramite} className="w-full font-[OpenSans]">
+        <Select
+          onValueChange={(e) => setTramite(e)}
+          value={tramite}
+          className="w-full font-[OpenSans]"
+        >
           <SelectTrigger className="w-full text-left h-fit font-[OpenSans]">
             <SelectValue placeholder="Seleccionar tipo" />
           </SelectTrigger>
           <SelectContent className="font-[OpenSans]">
             <SelectGroup>
-              <SelectItem value="1">Solicitud de alimentos</SelectItem>
-              <SelectItem value="2">Solicitud de insumos</SelectItem>
+              {listaTramites.map(l => <SelectItem value={l.id.toString()}>{l.nombre}</SelectItem>)}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <div className="grid gap-2">
         <Label htmlFor="username">Grupo dirigido</Label>
-      <Select onValueChange={(e) => setGrupoGestion(e)} value={grupoGestion} className="w-full font-[OpenSans]">
+        <Select
+          onValueChange={(e) => setGrupoGestion(e)}
+          value={grupoGestion}
+          className="w-full font-[OpenSans]"
+        >
           <SelectTrigger className="w-full text-left h-fit font-[OpenSans]">
             <SelectValue placeholder="Seleccionar grupo" />
           </SelectTrigger>
           <SelectContent className="font-[OpenSans]">
             <SelectGroup>
-              <SelectItem value="100">ALMACEN</SelectItem>
-              <SelectItem value="200">FINANCIERA</SelectItem>
+              {grupos.map((g) => (
+                <SelectItem value={g.id.toString()}>{g.nombre}</SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
