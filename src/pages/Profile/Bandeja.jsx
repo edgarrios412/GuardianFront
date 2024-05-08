@@ -457,8 +457,8 @@ const Bandeja = ({ className, ...props }) => {
                 </div>
               </div>:(!rutaArchivo ? <Word setRutaArchivo={setRutaArchivo} tramiteId={procedimiento.id}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
               {usuario.rol == 3 && <PdfViewer rutaDocumento={procedimiento.documento}/>}
-              {usuario.rol >= 4 && <><PdfViewer rutaDocumento={procedimiento.documento}/>
-              <Button onClick={() => alert("Firmar")}>Firmar</Button>
+              {usuario.rol >= 4 && <><PdfViewer rutaDocumento={procedimiento.documento} firmar={true}/>
+              {/* <Button onClick={() => alert("Firmar")}>Firmar</Button> */}
               </>}
               <Separator />
               <div className="grid w-full gap-1.5">

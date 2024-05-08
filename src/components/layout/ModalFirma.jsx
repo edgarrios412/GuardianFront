@@ -10,9 +10,11 @@ const ModalFirma = ({ isOpen, close, submit, id = 0, rutaArchivo, setData }) => 
     const [page, setPage] = useState({})
 
     const guardarDatos = () => {
+      let x = Math.floor(coord.x+(coord.x*0.2))
+      let y = Math.floor(coord.y+(coord.y*0.35))
       setData({
-        coorX:coord.x,
-        coorY:Math.floor(coord.y-(coord.y * 0.07)),
+        coorX:x < 0 ? 0 : x,
+        coorY:y < 0 ? 0 : y,
         rutaDocumento:rutaArchivo,
         pagina:page,
         tareasInternas:id

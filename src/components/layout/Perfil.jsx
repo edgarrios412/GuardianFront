@@ -18,7 +18,7 @@ const Perfil = ({setCoord, setPage, submit, rutaArchivo}) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [file, setFile] = useState()
-  const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
+  // const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
       axios.get("http://localhost:3001/"+rutaArchivo, {responseType: 'arraybuffer'}).then(({data}) => {
@@ -30,42 +30,42 @@ const Perfil = ({setCoord, setPage, submit, rutaArchivo}) => {
     setNumPages(numPages);
   };
 
-  useEffect(() => {
-    console.log(file)
-  },[file])
+  // useEffect(() => {
+  //   console.log(file)
+  // },[file])
 
   useEffect(() => {
     setPage(pageNumber)
   },[pageNumber])
 
-  const handleImageDrag = (event,data) => {
-	// console.log(event)
-    const { clientX, clientY } = event;
-    const { left, top } = event.currentTarget.getBoundingClientRect();
+  // const handleImageDrag = (event,data) => {
+	// // console.log(event)
+  //   const { clientX, clientY } = event;
+  //   const { left, top } = event.currentTarget.getBoundingClientRect();
 
-    const x = clientX - left;
-    const y = clientY - top;
+  //   const x = clientX - left;
+  //   const y = clientY - top;
 
-	console.log(clientX, left)
-	console.log(clientY, top)
+	// console.log(clientX, left)
+	// console.log(clientY, top)
 
-	console.log(event);
-    setCoordinates({ x, y });
-  };
+	// console.log(event);
+  //   setCoordinates({ x, y });
+  // };
 
-  useEffect(() =>{
-	console.log(coordinates)
-  },[coordinates])
+  // useEffect(() =>{
+	// console.log(coordinates)
+  // },[coordinates])
 
-  const handleImageDrop = async (e) => {
-	const { left, top } = e.currentTarget.getBoundingClientRect();
-	setCoordinates({ x:left, y:top});
-    try {
-      console.log('Respuesta del servidor:', coordinates);
-    } catch (error) {
-      console.error('Error al enviar coordenadas:', error);
-    }
-  };
+  // const handleImageDrop = async (e) => {
+	// const { left, top } = e.currentTarget.getBoundingClientRect();
+	// setCoordinates({ x:left, y:top});
+  //   try {
+  //     console.log('Respuesta del servidor:', coordinates);
+  //   } catch (error) {
+  //     console.error('Error al enviar coordenadas:', error);
+  //   }
+  // };
 
   return (
     <div style={{position:"relative"}}>

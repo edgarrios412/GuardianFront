@@ -16,7 +16,7 @@ export const BoxDragPreview = memo(function BoxDragPreview({ title }) {
   )
   return (
     <div style={styles}>
-      <Box title={title} yellow={tickTock} preview />
+      {/* <Box title={title} yellow={tickTock} preview /> */}
     </div>
   )
 })

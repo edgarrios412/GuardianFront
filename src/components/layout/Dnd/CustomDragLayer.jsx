@@ -2,8 +2,9 @@ import { useDragLayer } from 'react-dnd'
 import { BoxDragPreview } from './BoxDragPreview.jsx'
 import { ItemTypes } from './ItemTypes.jsx'
 import { snapToGrid } from './snapToGrid.jsx'
+import { Mouse } from 'lucide-react'
 const layerStyles = {
-  position: 'fixed',
+  position: 'absolute',
   pointerEvents: 'none',
   zIndex: 100,
   left: 0,

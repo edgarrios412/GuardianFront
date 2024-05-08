@@ -17,8 +17,8 @@ export const Container = ({ snapToGrid, setCoord }) => {
   })
 
   useEffect(() => {
-    console.log(600 - boxes.a.top, boxes.a.left)
-    setCoord({y:600 - boxes.a.top,x:boxes.a.left})
+    console.log(boxes.a.top, boxes.a.left)
+    setCoord({y:boxes.a.top,x:boxes.a.left})
   },[boxes])
 
   const moveBox = useCallback(

@@ -15,15 +15,33 @@ import es_ES from '@react-pdf-viewer/locales/lib/es_ES.json';
 import ModalFirma from "./ModalFirma";
 // Create new plugin instance
 
-const PdfViewer = ({ rutaDocumento }) => {
+const PdfViewer = ({ rutaDocumento, firmar = false }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const [documento, setDocumento] = useState(null);
+  const [documento, setDocumento] = useState(rutaDocumento);
   const [isOpen, setIsOpen] = useState(false)
+  const [data, setData] = useState()
+
+  useEffect(() => {
+    if(data){
+      console.log(data)
+      setDocumento(null)
+      firmarDocumento(data)
+    }
+  },[data])
+
+  const firmarDocumento = (data) => {
+    axios.post("/tramite/firmarDocumento",{
+      x: data.coorX,
+      y: data.coorY,
+      pagina: data.pagina,
+      file: rutaDocumento
+    }).then(({data}) => setDocumento(data))
+  }
 
   return (
     <div>
 
-      {rutaDocumento && <div
+      {documento && <div
         style={{
           width: "45vw",
           height: "80vh",
@@ -35,7 +53,7 @@ const PdfViewer = ({ rutaDocumento }) => {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             localization={es_ES}
-            fileUrl={"http://localhost:3001/"+rutaDocumento}
+            fileUrl={"http://localhost:3001/"+documento}
             plugins={[
               // Register plugins
               defaultLayoutPluginInstance,
@@ -43,17 +61,17 @@ const PdfViewer = ({ rutaDocumento }) => {
           />
         </Worker>
       </div>}
-          {/* <ModalFirma
+          {firmar && <ModalFirma
                 isOpen={isOpen}
                 close={() => setIsOpen(false)}
                 // submit={(e) => {
                 //     onSubmit(e);
                 //     setIsOpen(false);
                 // }}
-                // setData={setData}
+                setData={setData}
                 id={0}
-                rutaArchivo={rutaDocumento}
-      /> */}
+                rutaArchivo={documento}
+      />}
     </div>
   );
 };
