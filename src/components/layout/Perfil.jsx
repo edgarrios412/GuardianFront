@@ -21,7 +21,7 @@ const Perfil = ({setCoord, setPage, submit, rutaArchivo}) => {
   // const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-      axios.get("http://localhost:3001/"+rutaArchivo, {responseType: 'arraybuffer'}).then(({data}) => {
+      axios.get("https://guardianbackend.onrender.com/"+rutaArchivo, {responseType: 'arraybuffer'}).then(({data}) => {
         setFile(new File([data], "prueba.pdf", {type: 'application/pdf'}))
       })
   },[])
@@ -70,7 +70,7 @@ const Perfil = ({setCoord, setPage, submit, rutaArchivo}) => {
   return (
     <div style={{position:"relative"}}>
       <Document
-        file={"http://localhost:3001/"+rutaArchivo}
+        file={"https://guardianbackend.onrender.com/"+rutaArchivo}
         onLoadSuccess={onDocumentLoadSuccess}
 		style={{position:"absolute"}}
       >
