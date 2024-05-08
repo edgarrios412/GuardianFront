@@ -10,7 +10,7 @@ import { registerLicense } from '@syncfusion/ej2-base';
 
 registerLicense("ORg4AjUWIQA/Gnt2UFhhQlJBfV5AQmBIYVp/TGpJfl96cVxMZVVBJAtUQF1hTX5XdUViXnxedXxWRWZa")
 // axios.defaults.baseURL = "https://back-teldip.onrender.com";
-axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.baseURL = 'https://guardianbackend.onrender.com';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
