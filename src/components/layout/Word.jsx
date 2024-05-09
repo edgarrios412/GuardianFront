@@ -13,8 +13,8 @@ import { useToast } from '../ui/use-toast';
 DocumentEditorContainerComponent.Inject(Toolbar);
 // registerLicense("Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJzWmFZfVpgfF9EaVZRQWYuP1ZhSXxXdkdjUX9Wcn1VQ2JcU0U=");
 // tslint:disable:max-line-length
-const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, datosTramite, creado, rutaDocumento, enFirma, setGuardado, documentoId, esFlujo = false }) => {
-    // let hostUrl = "https://backguardian.supervigilancia.gov.co:8443/guardian/sync/";
+const Word = ({setRutaArchivo, tramiteId,pathPlantilla, tipoDocumental, id, setData, userId, datosTramite, creado, rutaDocumento, enFirma, setGuardado, documentoId, esFlujo = false }) => {
+    let hostUrl = "https://services.syncfusion.com/react/production/api/documenteditor/";
     let container = useRef(null);
     const [isOpen, setIsOpen] = React.useState(false)
     // const [rutaArchivo, setRutaArchivo] = React.useState()
@@ -45,8 +45,20 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
         setCulture('es');
         L10n.load(json);
         // loadExternalFonts('Montserrat','https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap')
-        if (creado) return;
+        // if (creado) return;
         let usuario;
+        axios.get("https://guardianbackend.onrender.com/"+pathPlantilla, {
+            responseType: 'arraybuffer', // Especificamos el tipo de respuesta como arraybuffer
+          }).then(({data}) => {
+            const buffer = Buffer.from(data, "base64");
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+            const file = new File([blob], "name");
+            const form = new FormData()
+            form.append("files", file)
+            axios.post("https://services.syncfusion.com/react/production/api/documenteditor/Import", form).then(({data}) => {
+                setDocumento(data.sfdt)
+            })
+        })
         // axios.get("/api/v1/usuario/mostrar/" + userId, { headers: { Authorization: sessionStorage.getItem("token") } })
         //     .then(({ data }) => {
         //         usuario = data
@@ -159,19 +171,19 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
     useEffect(() => {
         console.log(rutaDocumento)
         setRutaDocumentoActual(rutaDocumento)
-        axios.get("https://backguardian.supervigilancia.gov.co:8443/guardian/api/v1/documentos/mostrar-documento?rutaArchivo=" + rutaDocumento, {
-            responseType: 'arraybuffer'
-        })
-            .then(({ data }) => {
-                const form = new FormData()
-                const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                console.log(blob)
-                form.append("files", blob)
-                axios.post("https://backguardian.supervigilancia.gov.co:8443/guardian/sync/Import", form).then(({ data }) => { setDocumento(data.sfdt); console.log(data) })
-            })
-            .then(arrayBuffer => {
-                // Resto del código para subir el archivo...
-            });
+        // axios.get("https://backguardian.supervigilancia.gov.co:8443/guardian/api/v1/documentos/mostrar-documento?rutaArchivo=" + rutaDocumento, {
+        //     responseType: 'arraybuffer'
+        // })
+        //     .then(({ data }) => {
+        //         const form = new FormData()
+        //         const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        //         console.log(blob)
+        //         form.append("files", blob)
+        //         axios.post("https://backguardian.supervigilancia.gov.co:8443/guardian/sync/Import", form).then(({ data }) => { setDocumento(data.sfdt); console.log(data) })
+        //     })
+        //     .then(arrayBuffer => {
+        //         // Resto del código para subir el archivo...
+        //     });
     }, [rutaDocumento])
 
     const [convirtiendo, setConvirtiendo] = React.useState(false)
@@ -253,7 +265,7 @@ const Word = ({setRutaArchivo, tramiteId, tipoDocumental, id, setData, userId, d
                             style={{ display: "block" }}
                             height={"900px"}
                             className='bg-gray-600'
-                            // serviceUrl={hostUrl}
+                            serviceUrl={hostUrl}
                             // documentEditorSettings={{ fontFamilies: ["Arial", "Montserrat"] }}
                             // documentChange={(e) => e.source.enableTrackChanges = false}
                             // paste={(args) => {

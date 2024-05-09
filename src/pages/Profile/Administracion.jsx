@@ -38,6 +38,7 @@ import {
   BookUser,
   TextSelect,
   NotebookText,
+  FileStack,
 } from "lucide-react";
 import {
   Card,
@@ -88,6 +89,8 @@ const Administracion = () => {
   const { toast } = useToast();
   const [id, setId] = useState();
   const [listaTramites, setListaTramites] = useState([])
+  const [plantillas, setPlantillas] = useState([])
+  const [file, setFile] = useState()
 
   const createByUser = () => {
     axios
@@ -124,6 +127,7 @@ const Administracion = () => {
     axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
     axios.get("/grupo").then(({ data }) => setGrupos(data));
     axios.get("/reporte/all").then(({ data }) => setReportes(data));
+    axios.get("/plantilla").then(({ data }) => setPlantillas(data));
   }, []);
 
   const setearValores = (usuario) => {
@@ -216,7 +220,7 @@ const Administracion = () => {
 
   const editarGrupo = () => {
     axios
-      .put("/grupo/"+id, {
+      .put("/grupo/" + id, {
         nombre: name,
       })
       .then(
@@ -237,7 +241,7 @@ const Administracion = () => {
 
   const editarTramite = () => {
     axios
-      .put("/tramite/listaTramite/editar/"+id, {
+      .put("/tramite/listaTramite/editar/" + id, {
         nombre: name,
       })
       .then(
@@ -276,6 +280,36 @@ const Administracion = () => {
           })
       );
   };
+
+  const uploadFile = async () => {
+    const form = new FormData();
+    form.append("file", file);
+    const {data} = await axios.post("/documentos/null", form)
+    return data
+  };
+
+  const crearPlantilla = async () => {
+    const plantilla = await uploadFile()
+    axios
+      .post("/plantilla", {
+        nombre: name,
+        path:plantilla.path
+      })
+      .then(
+        () => {
+          axios.get("/plantilla").then(({ data }) => setPlantillas(data));
+          toast({
+            title: "Plantilla creado exitosamente",
+          });
+        },
+        (e) =>
+          toast({
+            variant: "destructive",
+            title: "Ha ocurrido un error",
+            description: e.response.data,
+          })
+      );
+  }
 
   return (
     <motion.div
@@ -369,6 +403,18 @@ const Administracion = () => {
                     <p className="text-sm font-bold leading-none">Administrar tramites</p>
                     <p className="text-sm text-muted-foreground">
                       Agrega, edita y borra trámites del sistema
+                    </p>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setServiceSelected(7)}
+                  className="hover:border-blue-200 hover:bg-blue-100 transition-all cursor-pointer flex items-center space-x-4 rounded-md border p-4"
+                >
+                  <FileStack />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm font-bold leading-none">Plantillas</p>
+                    <p className="text-sm text-muted-foreground">
+                      Agrega, edita y borra plantillas del sistema
                     </p>
                   </div>
                 </div>
@@ -546,11 +592,10 @@ const Administracion = () => {
                             </DialogHeader>
                             <DialogFooter>
                               <Button
-                                className={`${
-                                  u.ban
+                                className={`${u.ban
                                     ? "bg-green-600 hover:bg-green-800"
                                     : "bg-red-600 hover:bg-red-800"
-                                }`}
+                                  }`}
                                 onClick={() => banUser(u.id, u.ban)}
                               >
                                 {u.ban
@@ -890,9 +935,8 @@ const Administracion = () => {
                             </TableCell>
                             <TableCell>
                               <span
-                                className={`rounded-lg ${
-                                  t.estado >= 5 ? "bg-green-600" : "bg-blue-600"
-                                } text-white px-2 py-1`}
+                                className={`rounded-lg ${t.estado >= 5 ? "bg-green-600" : "bg-blue-600"
+                                  } text-white px-2 py-1`}
                               >
                                 {t.estado == 1 && "Nuevo"}
                                 {t.estado == 2 && "Repartido"}
@@ -962,7 +1006,7 @@ const Administracion = () => {
                             <TableCell>
                               <Dialog>
                                 <DialogTrigger>
-                                  <Button onClick={() => {setName(t.nombre); setId(t.id)}}>Editar</Button>
+                                  <Button onClick={() => { setName(t.nombre); setId(t.id) }}>Editar</Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[425px]">
                                   <DialogHeader>
@@ -1060,7 +1104,7 @@ const Administracion = () => {
                 Administrar tramites
               </CardTitle>
               <CardDescription>
-              Agrega, edita y borra trámites del sistema
+                Agrega, edita y borra trámites del sistema
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1091,7 +1135,7 @@ const Administracion = () => {
                             <TableCell>
                               <Dialog>
                                 <DialogTrigger>
-                                  <Button onClick={() => {setName(t.nombre); setId(t.id)}}>Editar</Button>
+                                  <Button onClick={() => { setName(t.nombre); setId(t.id) }}>Editar</Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[425px]">
                                   <DialogHeader>
@@ -1159,6 +1203,100 @@ const Administracion = () => {
                   </DialogHeader>
                   <DialogFooter>
                     <Button onClick={crearTramite}>Crear tramite</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+      {serviceSelected == 7 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <Card className="font-[OpenSans] px-5 py-5">
+            <CardHeader>
+              <CardTitle className="flex gap-4 items-center">
+                <ChevronLeft
+                  className="mt-1 cursor-pointer"
+                  onClick={() => setServiceSelected(null)}
+                />{" "}
+                Plantillas
+              </CardTitle>
+              <CardDescription>
+                Agrega, edita y borra plantillas del sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                {!plantillas?.length ? (
+                  <div className="h-40 text-center">
+                    <TextSelect className="m-auto text-gray-300 h-14 w-14 my-4" />
+                    <h1 className="text-muted-foreground text-sm">
+                      No hay tramites registrados
+                    </h1>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[100px]">Id</TableHead>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {plantillas
+                        .sort((a, b) => a.id - b.id)
+                        .map((t) => (
+                          <TableRow key={t.id}>
+                            <TableCell className="font-bold">{t.id}</TableCell>
+                            <TableCell>{t.nombre}</TableCell>
+                            <TableCell>
+                              <a href={"https://guardianbackend.onrender.com/" + t.path}>
+                                <Button>Descargar</Button>
+                              </a>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+              <Dialog>
+                <DialogTrigger>
+                  <Button className="mt-5">Nueva plantilla</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Ingresa los datos</DialogTitle>
+                    <DialogDescription
+                      className={"font-[OpenSans] text-sm mb-6"}
+                    >
+                      Ingresa los datos del tramite que deseas crear en el sistema
+                    </DialogDescription>
+                    <div className="flex flex-col pt-3 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Nombre</Label>
+                        <Input
+                          placeholder="Escribe el nombre del grupo"
+                          className={"font-[OpenSans] text-sm"}
+                          type="text"
+                          onChange={(e) => setName(e.target.value)}
+                          value={name}
+                          id="lastname"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col pt-3 gap-4">
+                      <div className="grid gap-2">
+                      <Label htmlFor="email">Plantilla</Label>
+                        <Input type="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        ></Input>
+                      </div>
+                    </div>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button onClick={crearPlantilla}>Crear plantilla</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

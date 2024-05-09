@@ -120,6 +120,7 @@ const Bandeja = ({ className, ...props }) => {
   const [plantillaSelected, setPlantillaSelected] = useState(null)
   const [rutaArchivo, setRutaArchivo] = useState(null)
   const [formSolicitud, setFormSolicitud] = useState(false)
+  const [plantillas, setPlantillas] = useState([])
 
   useEffect(() => {
     axios
@@ -129,6 +130,7 @@ const Bandeja = ({ className, ...props }) => {
     axios
       .get("/usuario/order/byGroup")
       .then(({ data }) => setUsuariosByGroup(data));
+      axios.get("/plantilla").then(({ data }) => setPlantillas(data));
   }, []);
 
   useEffect(() => {
@@ -448,14 +450,11 @@ const Bandeja = ({ className, ...props }) => {
               {/* SI ES REPARTIDOR */}
               {usuario.rol == 1 && <></>}
               {usuario.rol == 2 && (plantillaSelected == null && rutaArchivo == null ? <div>
-                <h3 className="text-center font-bold text-xl my-6">Seleccionar plantillas</h3>
+                <h3 className="text-center font-bold text-xl my-6">Seleccionar plantilla</h3>
                 <div className="flex flex-col items-center gap-4 mb-10">
-                  <Button className="w-96" onClick={() => setPlantillaSelected(1)}>Plantilla uno</Button>
-                  <Button className="w-96" onClick={() => setPlantillaSelected(2)}>Plantilla dos</Button>
-                  <Button className="w-96" onClick={() => setPlantillaSelected(3)}>Plantilla tres</Button>
-                  <Button className="w-96" onClick={() => setPlantillaSelected(4)}>Plantilla cuatro</Button>
+                  {plantillas.map( p => <Button className="w-96" onClick={() => setPlantillaSelected(p.path)}>{p.nombre}</Button>)}
                 </div>
-              </div>:(!rutaArchivo ? <Word setRutaArchivo={setRutaArchivo} tramiteId={procedimiento.id}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
+              </div>:(!rutaArchivo ? <Word pathPlantilla={plantillaSelected} setRutaArchivo={setRutaArchivo} tramiteId={procedimiento.id}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
               {usuario.rol == 3 && <PdfViewer rutaDocumento={procedimiento.documento}/>}
               {usuario.rol >= 4 && <><PdfViewer rutaDocumento={procedimiento.documento} firmar={true}/>
               {/* <Button onClick={() => alert("Firmar")}>Firmar</Button> */}
