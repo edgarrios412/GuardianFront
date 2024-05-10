@@ -27,22 +27,23 @@ import { motion } from "framer-motion";
 import { UserContext } from "@/utils/context/User/UserContext";
 import { useToast } from "../ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 export default ({ open, setOpen, setIsLogged }) => {
 
   return (
-    <Dialog id={1} open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Ingresar</DialogTitle>
-          <DialogDescription className={"font-[OpenSans] text-sm"}>
+    <Card id={1} open={open} onOpenChange={setOpen} className="w-fit">
+      <CardContent className="sm:max-w-[425px]">
+        <CardHeader>
+          <CardTitle>Ingresar</CardTitle>
+          <CardDescription className={"font-[OpenSans] text-sm"}>
             Ingresa a tu cuenta para tener acceso a todas las funcionalidades
             disponibles en la web
-          </DialogDescription>
-        </DialogHeader>
+          </CardDescription>
+        </CardHeader>
         <LoginForm setIsLogged={setIsLogged} />
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+    </Card>
   );
 };
 
