@@ -1,5 +1,5 @@
 import ModalLogin from "@/components/layout/ModalLogin"
-import phase from "../../public/phase2.png"
+import phase from "/phase2.png"
 
 const Login = () => {
     return(

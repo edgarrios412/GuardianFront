@@ -164,7 +164,7 @@ const Bandeja = ({ className, ...props }) => {
   const finalizarFlujo = () => {
     axios
       .put("/tramite/" + procedimiento.id, {
-        estado: 5,
+        estado: 6,
         observacion,
         usuarioAsignado:null,
         usuarioHistorial: usuario.id
@@ -194,7 +194,7 @@ const Bandeja = ({ className, ...props }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gray-100 font-[OpenSans] px-20 py-10"
+      className="bg-gray-100 font-[OpenSans] px-2 lg:px-20 py-2 lg:py-10"
     >
       <ModalFormSolicitud open={formSolicitud} setOpen={setFormSolicitud}/>
       <div className="flex gap-10">
@@ -452,13 +452,12 @@ const Bandeja = ({ className, ...props }) => {
               {usuario.rol == 2 && (plantillaSelected == null && rutaArchivo == null ? <div>
                 <h3 className="text-center font-bold text-xl my-6">Seleccionar plantilla</h3>
                 <div className="flex flex-col items-center gap-4 mb-10">
-                  {plantillas.map( p => <Button className="w-96" onClick={() => setPlantillaSelected(p.path)}>{p.nombre}</Button>)}
+                  {plantillas.map( p => <Button className="lg:w-96 w-fit" onClick={() => setPlantillaSelected(p.path)}>{p.nombre}</Button>)}
                 </div>
               </div>:(!rutaArchivo ? <Word pathPlantilla={plantillaSelected} setRutaArchivo={setRutaArchivo} tramiteId={procedimiento.id}/>:<PdfViewer rutaDocumento={rutaArchivo}/>))}
               {usuario.rol == 3 && <PdfViewer rutaDocumento={procedimiento.documento}/>}
-              {usuario.rol >= 4 && <><PdfViewer rutaDocumento={procedimiento.documento} firmar={true}/>
-              {/* <Button onClick={() => alert("Firmar")}>Firmar</Button> */}
-              </>}
+              {usuario.rol == 4 && <PdfViewer rutaDocumento={procedimiento.documento} firmar={true}/>}
+              {usuario.rol >= 5 && <PdfViewer rutaDocumento={procedimiento.documento}/>}
               <Separator />
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="message" className="font-bold mb-2 mt-4">
@@ -470,7 +469,7 @@ const Bandeja = ({ className, ...props }) => {
                   id="message"
                 />
               </div>
-              {usuario.rol < 4 &&<Select
+              {usuario.rol < 5 &&<Select
                 onValueChange={(e) => setUsuarioAsignado(e)}
                 className="w-full font-[OpenSans]"
               >
@@ -487,6 +486,7 @@ const Bandeja = ({ className, ...props }) => {
                         if(procedimiento.estado == 1) return u.rol == 2
                         if(procedimiento.estado == 2) return u.rol == 3
                         if(procedimiento.estado == 3) return u.rol == 4
+                        if(procedimiento.estado == 4) return u.rol == 5
                       }).map((u) => (
                         <SelectItem value={u.id}>
                           {u.nombres} {u.apellidos}
@@ -504,7 +504,7 @@ const Bandeja = ({ className, ...props }) => {
               >
                 <X className="mr-2 h-4 w-4" /> Rechazar
               </Button>
-              {usuario.rol >= 4 ? <Button className="w-full" onClick={finalizarFlujo}>
+              {usuario.rol >= 5 ? <Button className="w-full" onClick={finalizarFlujo}>
                 <Check className="mr-2 h-4 w-4" /> Finalizar
               </Button>:<Button className="w-full" onClick={aprobarFlujo}>
                 <Check className="mr-2 h-4 w-4" /> Aprobar

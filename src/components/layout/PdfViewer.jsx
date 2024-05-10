@@ -43,12 +43,12 @@ const PdfViewer = ({ rutaDocumento, firmar = false }) => {
 
       {documento && <div
         style={{
-          width: "45vw",
           height: "80vh",
           display: "flex",
           margin:"auto",
           justifyContent: "center",
         }}
+        className="lg:w-[45vw] w-full"
       >
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer

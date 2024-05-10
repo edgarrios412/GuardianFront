@@ -12,7 +12,8 @@ import {
   Archive,
   FlaskConical,
   MessageCircleWarning,
-  MapPin
+  MapPin,
+  AlignJustify
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import Perfil from "./Profile/Bandeja";
@@ -42,6 +43,7 @@ import ModalFormSolicitud from "@/components/layout/ModalFormSolicitud";
 import FormSolicitud from "./FormSolicitud";
 import Reportes from "./Profile/Reportes";
 import Geolocalizacion from "./Profile/Geolocalizacion";
+import { Dialog, DialogHeader,  DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const Profile = () => {
   // const { usuario } = useContext(UserContext);
@@ -85,7 +87,7 @@ const Profile = () => {
       </AlertDialogContent>
     </AlertDialog>
       <ResizablePanelGroup
-        direction="horizontal"
+        direction={window.innerWidth > 1000 ? "horizontal":"vertical"}
         className="h-full rounded-lg border"
       >
         <ResizablePanel
@@ -93,11 +95,12 @@ const Profile = () => {
             setSizePanel(e);
             console.log(e);
           }}
-          defaultSize={20}
-          maxSize={20}
+          defaultSize={window.innerWidth > 1000 ? 20:8}
+          maxSize={window.innerWidth > 1000 ? 20:8}
           minSize={6}
+          className=""
         >
-          <div className="flex-row h-full max-w-96 p-2">
+          {window.innerWidth > 1000 ?<div className="flex-row h-full max-w-96 p-2">
             {sizePanel > 14 ? (
               <div className="mb-2 p-5 justify-start">
                 <h2 className="font-[OpenSans] text-xl">
@@ -120,7 +123,7 @@ const Profile = () => {
                   <TooltipContent side="right">
                     <div className="p-5 justify-start">
                       <h2 className="font-[OpenSans] text-xl">
-                        Hola <b>Edgar!</b>
+                      Hola <b>{usuario.nombres}!</b>
                       </h2>
                       <span className="font-[OpenSans] text-xs text-gray-400">
                         Ultima conexión: 05/03/24 06:15
@@ -278,9 +281,70 @@ const Profile = () => {
                 {sizePanel > 14 && "Cerrar sesion"}
               </Button>
             </Link>
-          </div>
+          </div>:
+          <Dialog>
+            <DialogTrigger className="flex items-center justify-center m-auto">
+          <span className="flex items-center justify-center mt-4"><AlignJustify className="w-6 h-6"/></span>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                Menú de navegación
+              </DialogHeader>
+              <Button
+              onClick={() => setPage(1)}
+              className={`font-[OpenSans] bg-transparent mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
+                page == 1 ? "bg-blue-200" : "bg-transparent"
+              }`}
+            >
+            <Archive
+                    className="mr-4 h-4 w-4"
+                  />Bandeja
+            </Button>
+            <Button
+              onClick={() => setPage(2)}
+              className={`font-[OpenSans] bg-white mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
+                page == 2 ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+            <MessageCircleWarning
+                    className="mr-4 h-4 w-4"
+                  />Reportes
+            </Button>
+            <Button
+              onClick={() => setPage(3)}
+              className={`font-[OpenSans] bg-white mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
+                page == 3 ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              <MapPin
+                    className="mr-4 h-4 w-4"
+                  />Geolocalización
+            </Button>
+            <Button
+              onClick={() => setPage(4)}
+              className={`font-[OpenSans] bg-white mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-blue-200 ${
+                page == 4 ? "bg-blue-200" : "bg-white"
+              }`}
+            >
+              <Shield
+                    className="mr-4 h-4 w-4"
+                  />Administración
+            </Button>
+            <Link to="/">
+              <Button
+                onClick={() => localStorage.removeItem("token")}
+                className="font-[OpenSans] bg-white mb-2 justify-start text-black w-full border-2 border-transparent hover:bg-transparent hover:bg-red-200"
+              ><LogOut
+                      className="mr-4 h-4 w-4"
+                    />Cerrar sesion
+              </Button>
+              </Link>
+              </DialogContent>
+          </Dialog>
+          }
+          
         </ResizablePanel>
-        <ResizableHandle />
+        {window.innerWidth > 1000 ? <ResizableHandle />:null}
         <ResizablePanel defaultSize={80} className="!overflow-y-auto bg-gray-100">
           {page == 1 && <Perfil />}
           {page == 2 && <Reportes />}

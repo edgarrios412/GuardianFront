@@ -315,7 +315,7 @@ const Administracion = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gray-100 font-[OpenSans] px-20 py-10"
+      className="bg-gray-100 font-[OpenSans] px-2 lg:px-20 py-2 lg:py-10"
     >
       {!serviceSelected && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -473,6 +473,7 @@ const Administracion = () => {
                         {u.rol == 2 && "Proyector"}
                         {u.rol == 3 && "Revisor"}
                         {u.rol == 4 && "Firmante"}
+                        {u.rol == 5 && "Notificador"}
                       </TableCell>
                       <TableCell>
                         <Dialog>
@@ -571,6 +572,9 @@ const Administracion = () => {
                                         </SelectItem>
                                         <SelectItem value={4}>
                                           Firmante
+                                        </SelectItem>
+                                        <SelectItem value={5}>
+                                          Notificador
                                         </SelectItem>
                                       </SelectGroup>
                                     </SelectContent>
@@ -713,6 +717,7 @@ const Administracion = () => {
                               <SelectItem value="2">Proyector</SelectItem>
                               <SelectItem value="3">Revisor</SelectItem>
                               <SelectItem value="4">Firmante</SelectItem>
+                              <SelectItem value="5">Notificador</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -815,7 +820,7 @@ const Administracion = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-5 gap-10">
-                <Card className="col-span-1 flex flex-col items-center justify-center">
+                <Card className="col-span-5 md:col-span-2 lg:col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
                     <FileText className="min-w-7 min-h-7" />
                   </CardHeader>
@@ -828,7 +833,7 @@ const Administracion = () => {
                     <CardTitle className="text-lg">Tramites</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1 flex flex-col items-center justify-center">
+                <Card className="col-span-5 md:col-span-2 lg:col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
                     <Users className="min-w-7 min-h-7" />
                   </CardHeader>
@@ -841,7 +846,7 @@ const Administracion = () => {
                     <CardTitle className="text-lg">Usuarios</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1 flex flex-col items-center justify-center">
+                <Card className="col-span-5 md:col-span-2 lg:col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
                     <FolderOpen className="min-w-7 min-h-7" />
                   </CardHeader>
@@ -854,7 +859,7 @@ const Administracion = () => {
                     <CardTitle className="text-lg">Auditoria</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1 flex flex-col items-center justify-center">
+                <Card className="col-span-5 md:col-span-2 lg:col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
                     <MessageCircleWarning className="min-w-7 min-h-7" />
                   </CardHeader>
@@ -867,7 +872,7 @@ const Administracion = () => {
                     <CardTitle className="text-lg">Reportes</CardTitle>
                   </CardContent>
                 </Card>
-                <Card className="col-span-1 flex flex-col items-center justify-center">
+                <Card className="col-span-5 md:col-span-2 lg:col-span-1 flex flex-col items-center justify-center">
                   <CardHeader>
                     <MessageCircleWarning className="min-w-7 min-h-7" />
                   </CardHeader>
@@ -935,14 +940,15 @@ const Administracion = () => {
                             </TableCell>
                             <TableCell>
                               <span
-                                className={`rounded-lg ${t.estado >= 5 ? "bg-green-600" : "bg-blue-600"
+                                className={`rounded-lg ${t.estado >= 6 ? "bg-green-600" : "bg-blue-600"
                                   } text-white px-2 py-1`}
                               >
                                 {t.estado == 1 && "Nuevo"}
                                 {t.estado == 2 && "Repartido"}
                                 {t.estado == 3 && "Proyectado"}
                                 {t.estado == 4 && "Revisado"}
-                                {t.estado == 5 && "Finalizado"}
+                                {t.estado == 5 && "Firmado"}
+                                {t.estado == 6 && "Notificado"}
                               </span>
                             </TableCell>
                             <TableCell>{t.descripcion}</TableCell>

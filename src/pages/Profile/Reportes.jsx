@@ -166,7 +166,7 @@ const Reportes = ({ className, ...props }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-gray-100 font-[OpenSans] px-20 py-10"
+      className="bg-gray-100 font-[OpenSans] px-2 lg:px-20 py-2 lg:py-10"
     >
       <div className="flex gap-10">
         <Card className={cn("w-full h-fit pb-6", className)} {...props}>

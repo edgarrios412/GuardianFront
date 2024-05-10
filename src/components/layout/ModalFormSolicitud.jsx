@@ -110,7 +110,7 @@ function LoginForm({ className, setIsLogged }) {
       onSubmit={createSolicitud}
       className={cn("grid items-start gap-4", className)}
     >
-      <div className="grid gap-2">
+      {/* <div className="grid gap-2">
         <Label htmlFor="email">Documento</Label>
         <Input
           className={"font-[OpenSans] text-sm"}
@@ -119,7 +119,7 @@ function LoginForm({ className, setIsLogged }) {
           type="number"
           id="usuario"
         />
-      </div>
+      </div> */}
       <div className="grid gap-2">
         <Label htmlFor="username">Solicitud</Label>
         <Select
