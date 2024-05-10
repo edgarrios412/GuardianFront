@@ -282,7 +282,7 @@ const Reportes = ({ className, ...props }) => {
                                 Ver
                               </Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-screen">
                               <DialogHeader>
                                 <DialogTitle>Detalles del reporte</DialogTitle>
                                 <DialogDescription className={"font-[OpenSans] text-sm"}>Mira los detalles del reporte realizados por el vigilante para estar al tanto de todo</DialogDescription>
