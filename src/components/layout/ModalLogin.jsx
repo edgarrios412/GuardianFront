@@ -32,7 +32,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 export default ({ open, setOpen, setIsLogged }) => {
 
   return (
-    <Card id={1} open={open} onOpenChange={setOpen} className="w-fit">
+    <Card id={1} open={open} onOpenChange={setOpen} className="w-fit mb-20">
       <CardContent className="sm:max-w-[425px]">
         <CardHeader>
           <CardTitle>Ingresar</CardTitle>

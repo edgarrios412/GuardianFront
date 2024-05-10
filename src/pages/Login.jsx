@@ -3,11 +3,11 @@ import phase from "/phase2.png"
 
 const Login = () => {
     return(
-        <div className="flex h-full justify-center items-center gap-40 flex-col lg:flex-row mt-40">
+        <div className="flex h-full justify-center items-center gap-10 lg:gap-40 flex-col lg:flex-row mt-10 lg:mt-40">
             <div>
                 <img src={phase} className="w-60 lg:m-0 m-auto"/>
                 <h1 className="text-3xl mt-4 mb-4 lg:text-justify text-center">Software de gestión</h1>
-                <p style={{color: "hsl(217, 10%, 50.8%)", fontSize: "1.1rem" }} className="font-[OpenSans] lg:text-justify text-center">
+                <p style={{color: "hsl(217, 10%, 50.8%)", fontSize: "1.1rem" }} className="font-[OpenSans] lg:text-justify px-4">
                                     •	Seguridad y Confidencialidad<br></br>
                                     •	Acceso Controlado y Restringido <br></br>
                                     •	Automatización de Procesos <br></br>
