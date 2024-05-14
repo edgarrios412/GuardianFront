@@ -43,7 +43,8 @@ import ModalFormSolicitud from "@/components/layout/ModalFormSolicitud";
 import FormSolicitud from "./FormSolicitud";
 import Reportes from "./Profile/Reportes";
 import Geolocalizacion from "./Profile/Geolocalizacion";
-import { Dialog, DialogHeader,  DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogHeader,  DialogContent, DialogTrigger, DialogDescription, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { formatDate } from "@/utils/helpers/formatter";
 
 const Profile = () => {
   // const { usuario } = useContext(UserContext);
@@ -52,11 +53,19 @@ const Profile = () => {
   const [sizePanel, setSizePanel] = useState(null);
   const [caducado, setCaducado] = useState(false);
   const [formSolicitud, setFormSolicitud] = useState()
+  const [noPay, setNoPay] = useState(false)
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    axios.get("/usuario/sistema/ver").then(({data}) => {
+      const limitDate = formatDate(new Date(data.limitDate))
+      const actualDate = formatDate(new Date())
+      if(limitDate.split(" ")[0] < actualDate.split(" ")[0]){
+        setNoPay(true)
+      }
+    })
     if (token) {
       axios.get("/user/token/" + token).then(
         () => {},
@@ -71,21 +80,19 @@ const Profile = () => {
 
   return (
     <div className="h-[100vh] w-[100%]">
-      <AlertDialog open={false}>
-      <AlertDialogContent className="font-[OpenSans]">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Tu sesión ha caducado</AlertDialogTitle>
-          <AlertDialogDescription>
-            Por motivos de seguridad, tu sesión caduca automaticamente transcurrido un tiempo,
-            te recomendamos iniciar sesion nuevamente para seguir realizando operaciones en el panel
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          {/* <AlertDialogCancel>Cancel</AlertDialogCancel> */}
-          <AlertDialogAction onClick={() => {localStorage.removeItem("token"); navigate("/")}}>Ingresar nuevamente</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <Dialog open={noPay}>
+      <DialogContent className="font-[OpenSans]">
+        <DialogHeader>
+          <DialogTitle>Tu servicio ha sido suspendido</DialogTitle>
+          <DialogDescription>
+          Debido a retrasos en tu pago el servicio ha sido suspendido, para restaurar el servicios porfavor paga tu factura
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button onClick={() => alert("Logica para pagar factura")}>Pagar factura</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
       <ResizablePanelGroup
         direction={window.innerWidth > 1000 ? "horizontal":"vertical"}
         className="h-full rounded-lg border"
