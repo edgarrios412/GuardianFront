@@ -101,6 +101,7 @@ const Administracion = () => {
         password,
         grupoId: grupoGestion,
         rol,
+        companyId:usuario?.companyId
       })
       .then(
         () =>
@@ -117,17 +118,17 @@ const Administracion = () => {
   };
 
   useEffect(() => {
-    axios.get("/usuario/all").then(({ data }) => {
+    axios.get(`/usuario/byCompany/${usuario?.companyId}`).then(({ data }) => {
       setUsuarios(data);
     });
     axios.get("/auditoria/all").then(({ data }) => {
       setAuditorias(data);
     });
-    axios.get("/tramite/all").then(({ data }) => setTramites(data));
-    axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
-    axios.get("/grupo").then(({ data }) => setGrupos(data));
+    axios.get(`/tramite/${usuario.companyId}/all`).then(({ data }) => setTramites(data));
+    axios.get(`/tramite/listaTramites/listar/${usuario.companyId}`).then(({ data }) => setListaTramites(data));
+    axios.get(`/grupo/${usuario.companyId}`).then(({ data }) => setGrupos(data));
     axios.get("/reporte/all").then(({ data }) => setReportes(data));
-    axios.get("/plantilla").then(({ data }) => setPlantillas(data));
+    axios.get(`/plantilla/${usuario.companyId}`).then(({ data }) => setPlantillas(data));
   }, []);
 
   const setearValores = (usuario) => {
@@ -201,6 +202,7 @@ const Administracion = () => {
       .post("/grupo", {
         nombre: name,
         id: id,
+        companyId: usuario.companyId
       })
       .then(
         () => {
@@ -264,6 +266,7 @@ const Administracion = () => {
     axios
       .post("/tramite/listaTramite/crear", {
         nombre: name,
+        companyId:usuario.companyId
       })
       .then(
         () => {
@@ -293,7 +296,8 @@ const Administracion = () => {
     axios
       .post("/plantilla", {
         nombre: name,
-        path:plantilla.path
+        path:plantilla.path,
+        companyId: usuario.companyId
       })
       .then(
         () => {
@@ -1257,7 +1261,7 @@ const Administracion = () => {
                             <TableCell className="font-bold">{t.id}</TableCell>
                             <TableCell>{t.nombre}</TableCell>
                             <TableCell>
-                              <a href={"https://guardianbackend.onrender.com/" + t.path}>
+                              <a href={"http://localhost:3001/" + t.path}>
                                 <Button>Descargar</Button>
                               </a>
                             </TableCell>

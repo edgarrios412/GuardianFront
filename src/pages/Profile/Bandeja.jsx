@@ -546,7 +546,7 @@ const Bandeja = ({ className, ...props }) => {
                       <TableCell>{d.file}</TableCell>
                       <TableCell>{d.size}MB</TableCell>
                       <TableCell>
-                        <a href={"https://guardianbackend.onrender.com/"+d.path} target="_blank"><Button>Ver</Button></a>
+                        <a href={"http://localhost:3001/"+d.path} target="_blank"><Button>Ver</Button></a>
                       </TableCell>
                     </TableRow>
                   ))}

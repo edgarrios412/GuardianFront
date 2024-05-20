@@ -47,7 +47,7 @@ const Word = ({setRutaArchivo, tramiteId,pathPlantilla, tipoDocumental, id, setD
         // loadExternalFonts('Montserrat','https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap')
         // if (creado) return;
         let usuario;
-        axios.get("https://guardianbackend.onrender.com/"+pathPlantilla, {
+        axios.get("http://localhost:3001/"+pathPlantilla, {
             responseType: 'arraybuffer', // Especificamos el tipo de respuesta como arraybuffer
           }).then(({data}) => {
             const buffer = Buffer.from(data, "base64");

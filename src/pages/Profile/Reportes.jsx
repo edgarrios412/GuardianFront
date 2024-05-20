@@ -306,7 +306,7 @@ const Reportes = ({ className, ...props }) => {
                               {r.imagen &&
                               <>
                               <h3 className="font-[OpenSans] text-center font-bold my-4">Adjuntos</h3>
-                              <img className="m-auto mb-10 rounded-lg" src={"https://guardianbackend.onrender.com/"+r.imagen}/>
+                              <img className="m-auto mb-10 rounded-lg" src={"http://localhost:3001/"+r.imagen}/>
                               </>
                               }
                             </DialogContent>

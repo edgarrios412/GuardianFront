@@ -53,7 +53,7 @@ const PdfViewer = ({ rutaDocumento, firmar = false }) => {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
             localization={es_ES}
-            fileUrl={"https://guardianbackend.onrender.com/"+documento}
+            fileUrl={"http://localhost:3001/"+documento}
             plugins={[
               // Register plugins
               defaultLayoutPluginInstance,
