@@ -121,7 +121,7 @@ const Reportes = ({ className, ...props }) => {
   const [coordenadas, setCoordenadas] = useState([]);
 
   useEffect(() => {
-    axios.get("/reporte/all").then(({ data }) => setReportes(data));
+    axios.get(`/reporte/${usuario?.companyId}/all`).then(({ data }) => setReportes(data));
     axios.get("/usuario/all").then(({ data }) => setUsuarios(data));
     axios
       .get("/usuario/order/byGroup")
@@ -145,21 +145,37 @@ const Reportes = ({ className, ...props }) => {
 
   const crearReporte = async (e) => {
     e.preventDefault();
-    uploadFile().then((data) => {
-      console.log(data)
+    if(documento){
+      uploadFile().then((data) => {
+        console.log(data)
+        axios
+          .post("/reporte", {
+            detalle,
+            tipo,
+            usuarioId: usuario.id,
+            coordenadas,
+            imagen: data.path
+          })
+          .then(({ data }) => {
+            axios.get(`/reporte/${usuario?.companyId}/all`).then(({ data }) => setReportes(data));
+            alert("Reporte creado con éxito");
+          });
+      })
+    }else{
       axios
-        .post("/reporte", {
-          detalle,
-          tipo,
-          usuarioId: usuario.id,
-          coordenadas,
-          imagen: data.path
-        })
-        .then(({ data }) => {
-          axios.get("/reporte/all").then(({ data }) => setReportes(data));
-          alert("Reporte creado con éxito");
-        });
-    })
+          .post("/reporte", {
+            detalle,
+            tipo,
+            usuarioId: usuario.id,
+            coordenadas,
+            imagen: null,
+            companyId: usuario?.companyId
+          })
+          .then(({ data }) => {
+            axios.get(`/reporte/${usuario?.companyId}/all`).then(({ data }) => setReportes(data));
+            alert("Reporte creado con éxito");
+          });
+    }
   };
 
   return (

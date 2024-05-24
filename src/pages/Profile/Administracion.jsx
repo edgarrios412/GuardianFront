@@ -124,7 +124,7 @@ const Administracion = () => {
     axios.get("/auditoria/all").then(({ data }) => {
       setAuditorias(data);
     });
-    axios.get(`/tramite/${usuario.companyId}/all`).then(({ data }) => setTramites(data));
+    axios.get(`/tramite/company/${usuario.companyId}/all`).then(({ data }) => setTramites(data));
     axios.get(`/tramite/listaTramites/listar/${usuario.companyId}`).then(({ data }) => setListaTramites(data));
     axios.get(`/grupo/${usuario.companyId}`).then(({ data }) => setGrupos(data));
     axios.get("/reporte/all").then(({ data }) => setReportes(data));
@@ -155,7 +155,7 @@ const Administracion = () => {
           toast({
             title: "Usuario editado exitosamente",
           });
-          axios.get("/usuario/all").then(({ data }) => {
+          axios.get(`/usuario/byCompany/${usuario?.companyId}`).then(({ data }) => {
             setUsuarios(data);
           });
         },
@@ -184,7 +184,7 @@ const Administracion = () => {
               title: "Usuario restringido exitosamente",
             });
           }
-          axios.get("/usuario/all").then(({ data }) => {
+          axios.get(`/usuario/byCompany/${usuario?.companyId}`).then(({ data }) => {
             setUsuarios(data);
           });
         },
@@ -206,7 +206,7 @@ const Administracion = () => {
       })
       .then(
         () => {
-          axios.get("/grupo").then(({ data }) => setGrupos(data));
+          axios.get(`/grupo/${usuario.companyId}`).then(({ data }) => setGrupos(data));
           toast({
             title: "Grupo creado exitosamente",
           });
@@ -230,7 +230,7 @@ const Administracion = () => {
           toast({
             title: "Grupo editado exitosamente",
           });
-          axios.get("/grupo").then(({ data }) => setGrupos(data));
+          axios.get(`/grupo/${usuario.companyId}`).then(({ data }) => setGrupos(data));
         },
         (e) =>
           toast({
@@ -251,7 +251,7 @@ const Administracion = () => {
           toast({
             title: "Tramite editado exitosamente",
           });
-          axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+          axios.get(`/tramite/listaTramites/listar/${usuario.companyId}`).then(({ data }) => setListaTramites(data));
         },
         (e) =>
           toast({
@@ -270,7 +270,7 @@ const Administracion = () => {
       })
       .then(
         () => {
-          axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+          axios.get(`/tramite/listaTramites/listar/${usuario.companyId}`).then(({ data }) => setListaTramites(data));
           toast({
             title: "Tramite creado exitosamente",
           });
@@ -297,11 +297,11 @@ const Administracion = () => {
       .post("/plantilla", {
         nombre: name,
         path:plantilla.path,
-        companyId: usuario.companyId
+        companyId: usuario?.companyId
       })
       .then(
         () => {
-          axios.get("/plantilla").then(({ data }) => setPlantillas(data));
+          axios.get(`/plantilla/${usuario.companyId}`).then(({ data }) => setPlantillas(data));
           toast({
             title: "Plantilla creado exitosamente",
           });

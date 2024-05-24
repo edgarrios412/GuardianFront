@@ -72,7 +72,7 @@ const Geolocalizacion = () => {
     } else {
       console.log("Geolocation is not available in your browser.");
     }
-    axios.get("/reporte/all").then(({ data }) => {
+    axios.get(`/reporte/${usuario?.companyId}/all`).then(({ data }) => {
       setReportes(data)
     });
   },[])

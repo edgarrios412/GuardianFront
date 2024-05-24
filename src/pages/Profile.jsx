@@ -48,6 +48,7 @@ import { formatDate } from "@/utils/helpers/formatter";
 
 const Profile = () => {
   // const { usuario } = useContext(UserContext);
+  const {setUsuario} = useContext(UserContext)
   const usuario = JSON.parse(localStorage.getItem("user"))
   const [page, setPage] = useState(1);
   const [sizePanel, setSizePanel] = useState(null);
@@ -59,6 +60,7 @@ const Profile = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    setUsuario(JSON.parse(localStorage.getItem("user")))
     axios.get("/usuario/sistema/ver").then(({data}) => {
       const limitDate = formatDate(new Date(data.limitDate))
       const actualDate = formatDate(new Date())
@@ -114,7 +116,7 @@ const Profile = () => {
                   Hola <b>{usuario.nombres}!</b>
                 </h2>
                 <span className="font-[OpenSans] text-xs text-gray-400">
-                  Ultima conexión: 19/04/24 12:15
+                  Ultima conexión: 24/05/24 12:15
                 </span>
               </div>
             ) : (
@@ -133,7 +135,7 @@ const Profile = () => {
                       Hola <b>{usuario.nombres}!</b>
                       </h2>
                       <span className="font-[OpenSans] text-xs text-gray-400">
-                        Ultima conexión: 05/03/24 06:15
+                        Ultima conexión: 24/05/24 06:15
                       </span>
                     </div>
                   </TooltipContent>

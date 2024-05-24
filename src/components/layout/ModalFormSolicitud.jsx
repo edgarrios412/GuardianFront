@@ -68,8 +68,8 @@ function LoginForm({ className, setIsLogged }) {
   const [listaTramites, setListaTramites] = useState([])
 
   useEffect(() => {
-    axios.get("/grupo").then(({data}) => setGrupos(data))
-    axios.get("/tramite/listaTramites/listar").then(({ data }) => setListaTramites(data));
+    axios.get(`/grupo/${usuarioLogeado?.companyId}`).then(({data}) => setGrupos(data))
+    axios.get(`/tramite/listaTramites/listar/${usuarioLogeado?.companyId}`).then(({ data }) => setListaTramites(data));
   },[])
 
   const createSolicitud = (e) => {

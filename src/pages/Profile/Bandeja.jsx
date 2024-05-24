@@ -126,11 +126,11 @@ const Bandeja = ({ className, ...props }) => {
     axios
       .get("/tramite/usuario/" + usuario?.id)
       .then(({ data }) => setTramites(data));
-    axios.get("/usuario/all").then(({ data }) => setUsuarios(data));
+    axios.get("/usuario/byCompany/"+usuario?.companyId).then(({ data }) => setUsuarios(data));
     axios
-      .get("/usuario/order/byGroup")
+      .get("/usuario/order/byGroup/"+usuario?.companyId)
       .then(({ data }) => setUsuariosByGroup(data));
-      axios.get("/plantilla").then(({ data }) => setPlantillas(data));
+      axios.get("/plantilla/"+ usuario?.companyId).then(({ data }) => setPlantillas(data));
   }, []);
 
   useEffect(() => {
@@ -141,6 +141,7 @@ const Bandeja = ({ className, ...props }) => {
 
   const aprobarFlujo = () => {
     const usuarioSelected = usuarios.find((u) => u.id == usuarioAsignado);
+    console.log(usuarios)
     axios
       .put("/tramite/" + procedimiento.id, {
         usuarioAsignado,
